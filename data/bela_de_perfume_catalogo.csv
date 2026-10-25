@@ -1,0 +1,59 @@
+﻿nome_fornecedor;marca_provavel;volume_ml;custo_brl;preco_pix_47_brl;preco_cartao_53_brl;status;observacao
+Yara Candy;Lattafa;100;160;235,20;244,80;conferir_embalagem;ok
+Yara Rose;Lattafa;;160;235,20;244,80;revisar;"Confirmar se é Yara Pink; possível duplicata"
+Yara Branco;Lattafa;;160;235,20;244,80;revisar;Confirmar se é Yara Moi 100 ml
+Yara Pink;Lattafa;100;160;235,20;244,80;revisar;Possível duplicata Yara Rose
+Asad Preto;Lattafa;100;160;235,20;244,80;conferir_embalagem;ok
+Asad Elixir;Lattafa;100;180;264,60;275,40;conferir_embalagem;ok
+Asad Bourbon;Lattafa;100;180;264,60;275,40;conferir_embalagem;ok
+Sabah;;;200;294,00;306,00;revisar;Confirmar fabricante, nome completo e volume
+Veneno (qualquer cor);;;220;323,40;336,60;revisar;"Confirmar marca, versão e volume; separar variantes"
+Vulcan (qualquer cor);French Avenue;;220;323,40;336,60;revisar;Confirmar fabricante, versões e volume
+Hawas (qualquer cor);Rasasi;;280;411,60;428,40;revisar;Confirmar versão e volume
+Musamam;Lattafa;;310;455,70;474,30;revisar;Confirmar versão e volume
+Shagaf;;;150;220,50;229,50;revisar;Confirmar se é Shaghaf e fabricante
+Bon Bon;;;200;294,00;306,00;revisar;Confirmar marca e volume
+Angham;Lattafa;100;200;294,00;306,00;revisar;Conferir versão
+Club de Nuit (qualquer cor);Armaf;;190;279,30;290,70;revisar;Separar versões, 105 ml é comum, confirmar
+Nebras Elixir;Lattafa;;210;308,70;321,30;revisar;Confirmar volume e nome
+Atheeri (Abelha);Lattafa;100;280;411,60;428,40;conferir_embalagem;ok
+212 VIP Black;Carolina Herrera;;280;411,60;428,40;revisar;Confirmar 100 ou 200 ml
+212 Red;Carolina Herrera;;220;323,40;336,60;revisar;Confirmar modelo e volume
+CK;Calvin Klein;;220;323,40;336,60;revisar;Confirmar linha e volume
+Ater Wesal;;;240;352,80;367,20;revisar;Confirmar marca e grafia: Attar Al Wesal
+9 PM (qualquer cor);Afnan;;240;352,80;367,20;revisar;Confirmar versão e volume
+Silver Scent;Jacques Bogart;;220;323,40;336,60;revisar;Confirmar volume
+Prada Feminino;Prada;;220;323,40;336,60;revisar;Confirmar fragrância e volume
+Good Girl;Carolina Herrera;;250;367,50;382,50;revisar;Confirmar variante e volume
+Libre;Yves Saint Laurent;;220;323,40;336,60;revisar;Confirmar variante e volume
+Hermès;Hermès;;400;588,00;612,00;revisar;Confirmar fragrância e volume
+Bleu de Chanel;Chanel;;390;573,30;596,70;revisar;Confirmar concentração e volume
+Phantom;Rabanne;;220;323,40;336,60;revisar;Confirmar variante e volume
+La Vie Est Belle;Lancôme;;220;323,40;336,60;revisar;Confirmar variante e volume
+Afif Pavão;Lattafa;;350;514,50;535,50;revisar;Confirmar marca, versão e volume
+Fakhar Lattafa Gold;Lattafa;;200;294,00;306,00;revisar;Confirmar nome comercial exato e volume
+Fakhar Lattafa Branco;Lattafa;;200;294,00;306,00;revisar;Confirmar se é Fakhar Rose/White
+Fakhar Lattafa Preto;Lattafa;100;200;294,00;306,00;revisar;Conferir Fakhar Black
+Ferrari Scuderia;Ferrari;;320;470,40;489,60;revisar;Confirmar edição e volume
+Odyssey Candee;Armaf;100;200;294,00;306,00;conferir_embalagem;ok
+Odyssey Mandarin Sky;Armaf;100;200;294,00;306,00;conferir_embalagem;ok
+Odyssey Artisto;Armaf;;200;294,00;306,00;revisar;Confirmar grafia, variante e volume
+Historic Olmeda;Afnan;;220;323,40;336,60;revisar;Confirmar volume
+Historic Doria;Afnan;;220;323,40;336,60;revisar;Confirmar volume
+Historic Sahara;;;220;323,40;336,60;revisar;Confirmar fabricante e nome
+Khamrah Lattafa;Lattafa;100;280;411,60;428,40;revisar;Confirmar Khamrah original ou Qahwa
+Najdia;Lattafa;;250;367,50;382,50;revisar;Confirmar volume
+Dalal;Al Rehab;;350;514,50;535,50;revisar;Confirmar versão e volume
+Valentino Uomo;Valentino;;220;323,40;336,60;revisar;Confirmar edição e volume
+Si Preto e Vermelho;Giorgio Armani;;220;323,40;336,60;revisar;Confirmar variante e volume
+Maison Paris 200 ml;;200;450;661,50;688,50;revisar;Confirmar marca e fragrância
+Xerjoff Overdose;Xerjoff;;900;1323,00;1377,00;revisar;Confirmar se é Erba Pura Overdose ou outro
+Xerjoff Opera;Xerjoff;;900;1323,00;1377,00;revisar;"Existem 50 e 100 ml; confirmar"
+Xerjoff Coro;Xerjoff;;900;1323,00;1377,00;revisar;"Existem 50 e 100 ml; confirmar"
+Pistachio Anfar;Anfar;;220;323,40;336,60;revisar;Confirmar nome e volume
+No.2 Men 80 ml;;80;250;367,50;382,50;revisar;Confirmar marca
+Luantee 100 ml;;100;250;367,50;382,50;revisar;Confirmar marca e grafia
+Asool Verde 100 ml;;100;220;323,40;336,60;revisar;Confirmar marca e grafia
+Opulent Musk 100 ml;Lattafa;100;250;367,50;382,50;conferir_embalagem;ok
+Opulent Oud 100 ml;Lattafa;100;250;367,50;382,50;conferir_embalagem;ok
+Maahir 100 ml;Lattafa;100;200;294,00;306,00;revisar;Confirmar variante do Maahir

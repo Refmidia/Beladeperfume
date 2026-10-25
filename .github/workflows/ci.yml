@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Lint, typecheck, test, build, seed
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # The demo sandbox isolation tests need a real Postgres (schemas + search_path).
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_PASSWORD: attar
+          POSTGRES_DB: attar
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6 # version comes from package.json "packageManager"
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+        env:
+          TEST_POSTGRES_URL: postgres://postgres:attar@localhost:5432/attar
+      # No .env and no database: the build must work for anyone who forks.
+      - run: pnpm build
+      # Zero-account path on the embedded database: migrate, seed, then seed
+      # again to prove it's idempotent, then check listings and facets.
+      - name: Seed smoke test (PGlite)
+        run: |
+          pnpm db:migrate
+          pnpm db:seed
+          pnpm db:seed
+          pnpm catalog:verify
+
+  docker:
+    name: Docker image builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker build --tag attar:ci .
+      - run: docker build --tag attar-tools:ci --target tools .
