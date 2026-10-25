@@ -128,6 +128,8 @@ export const storeConfigSchema = () => z.object({
     lowStockThreshold: z.int().nonnegative(),
     /** Days a product counts as "New". */
     newArrivalDays: z.int().positive(),
+    /** PDP label above the variant buttons (sizes, scents, colors…). */
+    variantPickerLabel: z.string().min(1).max(80),
   }),
 
   theme: z.object({
@@ -243,6 +245,7 @@ const config: StoreConfig = {
     pageSize: 24,
     lowStockThreshold: 3,
     newArrivalDays: 30,
+    variantPickerLabel: "Escolha o cheiro",
   },
 
   theme: {

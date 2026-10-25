@@ -221,7 +221,7 @@ export function ProductBuyBox({
       {p.variants.length > 1 && (
         <fieldset className="size-picker">
           <legend>
-            {copy.product.size} <span>{size}</span>
+            {config.catalog.variantPickerLabel} <span>{size}</span>
           </legend>
           <div className="size-options">
             {p.variants.map((variant) => (
@@ -241,6 +241,10 @@ export function ProductBuyBox({
             ))}
           </div>
         </fieldset>
+      )}
+
+      {v.optionNote?.trim() && (
+        <p className="buy-option-note">{v.optionNote.trim()}</p>
       )}
 
       <div className="purchase-row" ref={purchaseRow}>

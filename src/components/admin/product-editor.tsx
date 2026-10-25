@@ -59,6 +59,7 @@ const blankVariant = () => ({
   sku: "",
   sizeMl: null as number | null,
   sizeLabel: pe.productEditor.volumePendingLabel,
+  optionNote: null as string | null,
   retailPrice: 0,
   price: 0,
   cardPrice: 0,
@@ -514,6 +515,19 @@ export function ProductEditor({
                             placeholder={pe.productEditor.volumeCustomPlaceholder}
                           />
                           <FieldError error={err("sizeLabel")} />
+                        </label>
+                        <label className="admin-field span-4">
+                          <span>{pe.productEditor.optionNote}</span>
+                          <textarea
+                            rows={3}
+                            maxLength={2000}
+                            value={v.optionNote ?? ""}
+                            placeholder={pe.productEditor.optionNotePlaceholder}
+                            onChange={(e) =>
+                              variant(i, "optionNote", e.target.value.trim() || null)
+                            }
+                          />
+                          <FieldError error={err("optionNote")} />
                         </label>
                         <label className="admin-field span-2">
                           <span>{pe.productEditor.sku}</span>

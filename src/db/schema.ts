@@ -83,6 +83,8 @@ export const productNotes = pgTable("product_notes", {
 export const productVariants = pgTable("product_variants", {
   id: id(), productId: text("product_id").notNull().references(() => products.id, { onDelete: "cascade" }),
   sku: text("sku").notNull().unique(), sizeMl: integer("size_ml"), sizeLabel: text("size_label"),
+  /** Shown on the PDP when this variant is selected (e.g. scent / color blurb). */
+  optionNote: text("option_note"),
   retailPrice: integer("retail_price").notNull(), price: integer("price").notNull(), costPrice: integer("cost_price"),
   /** Supplier list price (reference only, admin). */
   supplierSuggestedPrice: integer("supplier_suggested_price"),

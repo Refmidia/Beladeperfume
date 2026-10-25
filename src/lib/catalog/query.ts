@@ -32,6 +32,7 @@ export type PublicVariant = Pick<
   | "sku"
   | "sizeMl"
   | "sizeLabel"
+  | "optionNote"
   | "price"
   | "retailPrice"
   | "cardPrice"
@@ -60,6 +61,7 @@ const publicVariantColumns = {
   sku: true,
   sizeMl: true,
   sizeLabel: true,
+  optionNote: true,
   price: true,
   retailPrice: true,
   cardPrice: true,

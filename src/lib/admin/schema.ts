@@ -36,6 +36,7 @@ export const variantSchema = z
     sku: z.string().trim().min(1).max(120),
     sizeMl: z.union([integer.positive(), z.null()]),
     sizeLabel: optionalText,
+    optionNote: z.string().trim().max(2000).nullable().optional(),
     retailPrice: integer,
     price: integer,
     cardPrice: integer,

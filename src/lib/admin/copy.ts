@@ -385,12 +385,15 @@ export const adminCopy = {
     active: "Ativo",
     removeVariant: (n: number) => `Remover variante ${n}`,
     sizeMl: "Tamanho (ml)",
-    label: "Rótulo",
+    label: "Nome da opção (cheiro, cor ou tamanho)",
+    optionNote: "Descrição desta opção",
+    optionNotePlaceholder:
+      "Ex.: notas floradas, doce, amadeirado — o cliente vê ao escolher esta opção.",
     sku: "SKU",
     suggestSku: "Sugerir SKU",
     inStock: "Em estoque",
     barcode: "Código de barras",
-    addSize: "Adicionar outro tamanho",
+    addSize: "Adicionar outra opção (cheiro / tamanho)",
     imagesTitle: "Imagens",
     imagesDesc:
       "A primeira é a principal; a segunda no hover. Arraste a foto do PC: abrimos o link sugerido (/catalog/…) para você confirmar. Salve o produto depois.",

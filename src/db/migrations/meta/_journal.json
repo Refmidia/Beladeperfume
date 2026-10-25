@@ -57,6 +57,13 @@
       "when": 1792907937662,
       "tag": "0007_abnormal_magdalene",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792935957956,
+      "tag": "0008_familiar_blizzard",
+      "breakpoints": true
     }
   ]
 }

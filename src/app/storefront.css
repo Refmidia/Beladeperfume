@@ -2941,6 +2941,15 @@ div.store-width.empty-state {
   color: var(--sf-muted);
   font-weight: 400;
 }
+.buy-option-note {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border-radius: var(--sf-r-control);
+  background: var(--sf-surface-soft, #f7f4f0);
+  color: var(--sf-ink);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
 .size-options {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
