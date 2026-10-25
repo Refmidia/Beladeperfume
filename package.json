@@ -23,6 +23,7 @@
     "asaas:sync-vercel": "node scripts/sync-asaas-env-vercel.mjs",
     "asaas:register-webhook": "node scripts/register-asaas-webhook.mjs",
     "images:publish-local": "node --import tsx scripts/publish-local-uploads.ts",
+    "images:import": "node --import tsx scripts/import-product-images.ts",
     "homepage:mia-layout": "node --import tsx scripts/reorder-homepage-mia.ts",
     "homepage:hero-pt": "node --import tsx scripts/patch-hero-banners-pt.ts",
     "test": "node --import tsx --test tests/*.test.ts",

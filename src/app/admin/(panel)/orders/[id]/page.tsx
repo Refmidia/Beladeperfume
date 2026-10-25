@@ -24,10 +24,11 @@ import {
   PAYMENT_LABELS,
   STATUS_LABELS,
   formatDateTime,
-  ordinal,
+  orderEventMessage,
   timeAgo,
   whatsappHref,
 } from "@/lib/admin/format";
+import { adminCopy as t } from "@/lib/admin/copy";
 import {
   OrderActions,
   TimelineComposer,
@@ -70,18 +71,22 @@ export default async function Order({
   return (
     <>
       <PageHeader
-        crumbs={[["Orders", "/admin/orders"]]}
+        crumbs={[[t.orderDetail.crumbsOrders, "/admin/orders"]]}
         title={
           <span className="admin-title-row">
             {o.orderNumber}
             <StatusBadge status={o.status} />
           </span>
         }
-        description={`Placed ${formatDateTime(o.createdAt)} · ${timeAgo(o.createdAt)} · ${itemCount} ${itemCount === 1 ? "item" : "items"}`}
+        description={t.orderDetail.headerDescription(
+          formatDateTime(o.createdAt),
+          timeAgo(o.createdAt),
+          itemCount,
+        )}
         actions={<OrderActions order={o} />}
       />
 
-      <ol className="admin-progress" aria-label="Fulfilment progress">
+      <ol className="admin-progress" aria-label={t.orderDetail.progressLabel}>
         {FULFILMENT_STEPS.map((step, i) => {
           const done = i <= reachedIndex;
           const skipped = terminal && i > reachedIndex;
@@ -93,7 +98,7 @@ export default async function Order({
               <span className="admin-progress-dot">{done && <Check size={12} strokeWidth={3} />}</span>
               <span className="admin-progress-label">
                 {STATUS_LABELS[step]}
-                <small>{reachedAt.get(step) ? formatDateTime(reachedAt.get(step)!) : skipped ? "Skipped" : "—"}</small>
+                <small>{reachedAt.get(step) ? formatDateTime(reachedAt.get(step)!) : skipped ? t.orderDetail.skipped : "—"}</small>
               </span>
             </li>
           );
@@ -113,7 +118,10 @@ export default async function Order({
 
       <div className="admin-detail-grid">
         <div className="admin-stack">
-          <Panel title="Items" description={`${itemCount} ${itemCount === 1 ? "unit" : "units"} across ${o.items.length} ${o.items.length === 1 ? "line" : "lines"}`}>
+          <Panel
+            title={t.orderDetail.itemsTitle}
+            description={t.orderDetail.itemsDescription(itemCount, o.items.length)}
+          >
             <ul className="admin-lines">
               {o.items.map((i) => (
                 <li key={i.id}>
@@ -136,27 +144,30 @@ export default async function Order({
             </ul>
             <dl className="admin-totals">
               <div>
-                <dt>Subtotal</dt>
+                <dt>{t.orderDetail.subtotal}</dt>
                 <dd>{formatMoney(o.subtotal)}</dd>
               </div>
               <div>
-                <dt>Delivery{zone ? ` · ${zone.label}` : ""}</dt>
-                <dd>{o.deliveryFee ? formatMoney(o.deliveryFee) : "Free"}</dd>
+                <dt>
+                  {t.orderDetail.delivery}
+                  {zone ? ` · ${zone.label}` : ""}
+                </dt>
+                <dd>{o.deliveryFee ? formatMoney(o.deliveryFee) : t.orderDetail.deliveryFree}</dd>
               </div>
               {o.discount > 0 && (
                 <div>
-                  <dt>{o.couponCode ? `Coupon · ${o.couponCode}` : "Discount"}</dt>
+                  <dt>{o.couponCode ? t.orderDetail.coupon(o.couponCode) : t.orderDetail.discount}</dt>
                   <dd>−{formatMoney(o.discount)}</dd>
                 </div>
               )}
               <div className="grand">
-                <dt>Total</dt>
+                <dt>{t.orderDetail.total}</dt>
                 <dd>{formatMoney(o.total)}</dd>
               </div>
             </dl>
           </Panel>
 
-          <Panel title="Timeline" description="Status changes, calls and notes, newest first">
+          <Panel title={t.orderDetail.timelineTitle} description={t.orderDetail.timelineDescription}>
             <TimelineComposer order={o} />
             <ol className="admin-timeline">
               {o.events.map((e) => {
@@ -185,19 +196,19 @@ export default async function Order({
                           {e.type === "status_change" && e.toStatus
                             ? e.fromStatus
                               ? `${STATUS_LABELS[e.fromStatus]} → ${STATUS_LABELS[e.toStatus]}`
-                              : `Order placed`
+                              : t.orderDetail.eventOrderPlaced
                             : e.type === "call_logged"
-                              ? "Call logged"
+                              ? t.orderDetail.eventCallLogged
                               : e.type === "note"
-                                ? "Note"
-                                : "System"}
+                                ? t.orderDetail.eventNote
+                                : t.orderDetail.eventSystem}
                         </strong>
                         <time dateTime={e.createdAt.toISOString()} title={formatDateTime(e.createdAt)}>
                           {formatDateTime(e.createdAt)}
                         </time>
                       </div>
-                      {e.message && <p>{e.message}</p>}
-                      <small>{e.actor === "system" ? "System" : "Team member"}</small>
+                      {e.message && <p>{orderEventMessage(e.message)}</p>}
+                      <small>{e.actor === "system" ? t.orderDetail.actorSystem : t.orderDetail.actorTeam}</small>
                     </div>
                   </li>
                 );
@@ -207,19 +218,19 @@ export default async function Order({
         </div>
 
         <div className="admin-stack">
-          <Panel title="Customer">
+          <Panel title={t.orderDetail.customerTitle}>
             <div className="admin-customer">
               <Avatar name={o.customerName} size="lg" />
               <div>
                 <Link href={`/admin/customers?id=${o.customerId}`} className="admin-strong admin-link">
                   {o.customerName}
                 </Link>
-                <small>{ordinal(number.count)} order from this customer</small>
+                <small>{t.orderDetail.ordersFromCustomer(number.count)}</small>
               </div>
             </div>
             <div className="admin-contact">
               <a className="admin-btn primary" href={`tel:${o.customerPhone}`}>
-                <Phone size={16} /> Call
+                <Phone size={16} /> {t.common.call}
               </a>
               <a className="admin-btn" href={whatsappHref(o.customerPhone)} target="_blank" rel="noreferrer">
                 <MessageCircle size={16} /> WhatsApp
@@ -227,18 +238,18 @@ export default async function Order({
             </div>
             <dl className="admin-meta">
               <div>
-                <dt>Phone</dt>
+                <dt>{t.orderDetail.phone}</dt>
                 <dd className="admin-mono">{o.customerPhone}</dd>
               </div>
               {o.customerEmail && (
                 <div>
-                  <dt>Email</dt>
+                  <dt>{t.orderDetail.email}</dt>
                   <dd>{o.customerEmail}</dd>
                 </div>
               )}
               <div>
                 <dt>
-                  <MapPin size={13} /> Ship to
+                  <MapPin size={13} /> {t.orderDetail.shipTo}
                 </dt>
                 <dd>
                   {[o.shippingAddress.line1, o.shippingAddress.line2, o.shippingAddress.area, o.shippingAddress.city]
@@ -250,40 +261,40 @@ export default async function Order({
             </dl>
             {o.customerNote && (
               <blockquote className="admin-note">
-                <small>Customer note</small>
+                <small>{t.orderDetail.customerNote}</small>
                 {o.customerNote}
               </blockquote>
             )}
           </Panel>
 
-          <Panel title="Payment">
+          <Panel title={t.orderDetail.paymentTitle}>
             <dl className="admin-meta">
               <div>
-                <dt>Method</dt>
+                <dt>{t.orderDetail.method}</dt>
                 <dd>{PAYMENT_LABELS[o.paymentMethod] ?? o.paymentMethod}</dd>
               </div>
               <div>
-                <dt>Status</dt>
+                <dt>{t.orderDetail.status}</dt>
                 <dd>
                   {o.paymentVerified ? (
                     <Tag tone="good">
-                      <ShieldCheck size={12} /> Verified
+                      <ShieldCheck size={12} /> {t.orderDetail.verified}
                     </Tag>
                   ) : o.paymentMethod === "cod" ? (
-                    <Tag>Collect on delivery</Tag>
+                    <Tag>{t.orderDetail.collectOnDelivery}</Tag>
                   ) : (
-                    <Tag tone="warn">Awaiting verification</Tag>
+                    <Tag tone="warn">{t.orderDetail.awaitingVerification}</Tag>
                   )}
                 </dd>
               </div>
               {o.paymentTxnId && (
                 <div>
-                  <dt>Transaction ID</dt>
+                  <dt>{t.orderDetail.transactionId}</dt>
                   <dd className="admin-mono">{o.paymentTxnId}</dd>
                 </div>
               )}
               <div>
-                <dt>Amount</dt>
+                <dt>{t.orderDetail.amount}</dt>
                 <dd className="admin-strong">{formatMoney(o.total)}</dd>
               </div>
             </dl>
@@ -291,23 +302,23 @@ export default async function Order({
           </Panel>
 
           {(o.courierName || o.cancelledReason) && (
-            <Panel title={o.cancelledReason ? "Cancellation" : "Shipment"}>
+            <Panel title={o.cancelledReason ? t.orderDetail.cancellation : t.orderDetail.shipment}>
               <dl className="admin-meta">
                 {o.courierName && (
                   <>
                     <div>
-                      <dt>Courier</dt>
+                      <dt>{t.orderDetail.courier}</dt>
                       <dd>{o.courierName}</dd>
                     </div>
                     <div>
-                      <dt>Tracking ID</dt>
+                      <dt>{t.orderDetail.trackingId}</dt>
                       <dd className="admin-mono">{o.trackingId}</dd>
                     </div>
                   </>
                 )}
                 {o.cancelledReason && (
                   <div>
-                    <dt>Reason</dt>
+                    <dt>{t.orderDetail.reason}</dt>
                     <dd>{o.cancelledReason}</dd>
                   </div>
                 )}

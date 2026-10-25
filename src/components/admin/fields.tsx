@@ -134,7 +134,7 @@ export async function uploadImage(file: File) {
     !/^image\/(jpeg|png|webp)$/.test(file.type) ||
     file.size > 5 * 1024 * 1024
   )
-    throw new Error("Choose a JPEG, PNG or WebP under 5 MB.");
+    throw new Error("Use JPEG, PNG ou WebP com até 5 MB.");
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement("canvas");

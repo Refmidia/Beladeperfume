@@ -62,10 +62,12 @@ export async function POST(request: Request) {
     return Response.json({ url, key });
   } catch (error) {
     if (error instanceof SandboxUploadError) return Response.json({ error: error.message }, { status: 400 });
+    const onVercel = Boolean(process.env.VERCEL);
     return Response.json(
       {
-        error:
-          "Upload failed. Use a valid JPEG, PNG or WebP under 5 MB and check storage settings.",
+        error: onVercel
+          ? "Envio de arquivo indisponível na Vercel com armazenamento local. Use Imagens → Adicionar por URL (ex.: /catalog/foto.webp após npm run images:import) ou configure bucket S3/R2 (docs/deploy/storage.md)."
+          : "Falha no envio. Use JPEG, PNG ou WebP com até 5 MB ou confira STORAGE_ADAPTER no .env.",
       },
       { status: 400 },
     );

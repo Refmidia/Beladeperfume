@@ -68,8 +68,21 @@ export const FULFILMENT_STEPS = ["pending", "confirmed", "packed", "shipped", "d
 export const PAYMENT_LABELS: Record<string, string> = {
   cod: "Pagamento na entrega",
   bkash: "PIX",
-  nagad: "Nagad",
+  nagad: "Cartão",
 };
+
+const LEGACY_EVENT_MESSAGES: Record<string, string> = {
+  "Order placed. Awaiting phone confirmation.":
+    "Pedido criado. Aguardando confirmação por telefone.",
+  "Order placed; awaiting phone confirmation.":
+    "Pedido criado. Aguardando confirmação por telefone.",
+};
+
+/** Mensagens de evento gravadas em inglês no banco (pedidos antigos). */
+export function orderEventMessage(message: string | null | undefined) {
+  if (!message) return message;
+  return LEGACY_EVENT_MESSAGES[message] ?? message;
+}
 
 /** wa.me quer só dígitos, com DDI. */
 export function whatsappHref(phone: string) {

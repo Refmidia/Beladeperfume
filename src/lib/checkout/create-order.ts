@@ -145,7 +145,7 @@ export async function createOrder(input: unknown) {
         type: "status_change",
         toStatus: "pending",
         actor: "system",
-        message: "Order placed. Awaiting phone confirmation.",
+        message: "Pedido criado. Aguardando confirmação por telefone.",
       });
     return { order, created: true };
   });

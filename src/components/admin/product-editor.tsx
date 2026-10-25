@@ -617,7 +617,7 @@ export function ProductEditor({
                         <input
                           value={image.url}
                           aria-label={pe.productEditor.imageUrl(i + 1)}
-                          placeholder="https://… or /path.webp"
+                          placeholder="/catalog/nome.webp ou https://…"
                           onChange={(e) => set("images", data.images.map((row, n) => (n === i ? { ...row, url: e.target.value } : row)))}
                         />
                       )}

@@ -29,7 +29,8 @@ export function Media({
             src.endsWith(".svg") ||
             src.startsWith("http") ||
             src.startsWith("/uploads/") ||
-            src.startsWith("/hero/")
+            src.startsWith("/hero/") ||
+            src.startsWith("/catalog/")
           }
         />
       ) : (
