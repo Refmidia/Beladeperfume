@@ -23,6 +23,18 @@ export async function saveProductRecord(
   input: unknown,
 ) {
   const parsed = productSchema.parse(input);
+  if (env.STORAGE_ADAPTER === "s3") {
+    for (const img of parsed.images) {
+      if (
+        img.url.startsWith("/catalog/") &&
+        !/^https?:\/\//i.test(img.url)
+      ) {
+        throw new Error(
+          "Uma foto usa /catalog/… sem envio ao R2. Remova-a, envie de novo e espere «Foto adicionada» antes de salvar.",
+        );
+      }
+    }
+  }
   const variants = parsed.variants.map((variant) => {
     const priced = applyCostToVariantPricing({
       costPrice: variant.costPrice,
