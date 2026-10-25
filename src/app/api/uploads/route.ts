@@ -58,10 +58,10 @@ export async function POST(request: Request) {
       headers: { "Content-Type": request.headers.get("content-type") ?? "" },
     }).formData();
     const file = data.get("file");
-    if (!(file instanceof File)) throw new Error("Missing image.");
+    if (!(file instanceof Blob)) throw new Error("Missing image.");
     const bytes = await validateImage(
       new Uint8Array(await file.arrayBuffer()),
-      file.type,
+      file.type || "image/webp",
     );
     // Demo visitors (DEMO_MODE) upload into their own sandbox, never to storage.
     if (env.DEMO_MODE && session.user.role === "demo") return Response.json(await putSandboxUpload(bytes));
@@ -84,6 +84,18 @@ export async function POST(request: Request) {
         },
         { status: 503 },
       );
+    }
+    if (message === "Storage upload failed.") {
+      return Response.json(
+        {
+          error:
+            "Falha ao gravar no R2/S3. Confira S3_* na Vercel (token R2 com permissão de escrita no bucket).",
+        },
+        { status: 502 },
+      );
+    }
+    if (message && message !== "Missing image.") {
+      return Response.json({ error: message }, { status: 400 });
     }
     const onVercel = Boolean(process.env.VERCEL);
     return Response.json(

@@ -155,7 +155,10 @@ async function fileToWebpBlob(file: File) {
 export async function uploadCatalogImage(file: File, catalogSlug: string) {
   const blob = await fileToWebpBlob(file);
   const form = new FormData();
-  form.append("file", blob, "image.webp");
+  form.append(
+    "file",
+    new File([blob], "image.webp", { type: "image/webp" }),
+  );
   form.append("catalogSlug", catalogSlug);
   const response = await fetch("/api/uploads", { method: "POST", body: form });
   const data = await response.json();
@@ -166,7 +169,10 @@ export async function uploadCatalogImage(file: File, catalogSlug: string) {
 export async function uploadImage(file: File) {
   const blob = await fileToWebpBlob(file);
   const form = new FormData();
-  form.append("file", blob, "image.webp");
+  form.append(
+    "file",
+    new File([blob], "image.webp", { type: "image/webp" }),
+  );
   const response = await fetch("/api/uploads", { method: "POST", body: form });
   const data = await response.json();
   if (!response.ok) throw new Error(data.error);
