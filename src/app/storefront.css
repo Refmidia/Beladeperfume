@@ -677,51 +677,53 @@ html:not([data-input="keyboard"]) .star-input label:active {
 
 /* === ANNOUNCEMENT & HEADER ============================================== */
 .announcement {
-  position: relative;
   display: flex;
   align-items: center;
-  min-height: 38px;
-  padding: 8px 48px 8px 16px;
+  min-height: 32px;
+  padding: 7px 0;
   overflow: hidden;
   background: var(--sf-accent);
   color: var(--sf-accent-ink);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 .announcement-marquee {
   flex: 1;
   overflow: hidden;
-  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
 .announcement-marquee-track {
   display: flex;
   width: max-content;
-  animation: announcement-marquee 32s linear infinite;
+  animation: announcement-marquee 48s linear infinite;
 }
 .announcement-marquee-group {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
-  white-space: nowrap;
+  padding-right: 5rem;
 }
 .announcement-marquee-item {
   display: inline-flex;
   align-items: center;
+  gap: 1.75rem;
+  padding-inline: 2.25rem;
+  white-space: nowrap;
 }
 .announcement-link {
   color: inherit;
-  text-decoration: underline;
-  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
-  text-underline-offset: 3px;
+  text-decoration: none;
+  transition: opacity 150ms ease;
 }
 .announcement-link:hover {
-  text-decoration-color: currentColor;
+  opacity: 0.82;
 }
 .announcement-sep {
-  opacity: 0.55;
-  padding-inline: 0.15em;
+  opacity: 0.45;
+  font-weight: 300;
+  letter-spacing: 0;
 }
 @keyframes announcement-marquee {
   from {
@@ -734,34 +736,11 @@ html:not([data-input="keyboard"]) .star-input label:active {
 @media (prefers-reduced-motion: reduce) {
   .announcement-marquee-track {
     animation: none;
-    flex-wrap: wrap;
     justify-content: center;
     width: 100%;
-    white-space: normal;
-    text-align: center;
   }
   .announcement-marquee-group[aria-hidden="true"] {
     display: none;
-  }
-}
-.announcement-close {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: inherit;
-  translate: 0 -50%;
-  transition: background-color 150ms ease;
-}
-@media (hover: hover) {
-  .announcement-close:hover {
-    background: rgb(255 255 255 / 14%);
   }
 }
 @keyframes sf-fade-in {
@@ -4240,10 +4219,6 @@ html[data-input="pointer"]:has(.store-header) {
   .nav-feature-card,
   .nav-feature-card .media,
   .nav-feature-caption,
-  .announcement-marquee-track {
-    transition: none !important;
-    animation: none !important;
-  }
   /* Keep the fades, drop the movement. */
   .wishlist-button .heart {
     scale: 1 !important;

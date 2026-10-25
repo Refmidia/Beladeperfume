@@ -25,7 +25,12 @@ export function Media({
           loading={priority ? "eager" : undefined}
           fetchPriority={priority ? "high" : undefined}
           // Demo sandbox uploads (sbx-…) exist only for the visitor's own requests.
-          unoptimized={src.endsWith(".svg") || src.startsWith("http") || src.startsWith("/uploads/sbx-")}
+          unoptimized={
+            src.endsWith(".svg") ||
+            src.startsWith("http") ||
+            src.startsWith("/uploads/") ||
+            src.startsWith("/hero/")
+          }
         />
       ) : (
         <span className="media-fallback">Image unavailable</span>

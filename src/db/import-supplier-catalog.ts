@@ -21,6 +21,7 @@ import {
   type ImportPreviewReport,
   type ImportPreviewRow,
 } from "../lib/import/bela-catalog-csv";
+import { inferBrandType } from "../lib/import/infer-brand-type";
 import { inferSupplierGender } from "../lib/import/infer-gender";
 import { readSupplierMeta } from "../lib/import/publish-guards";
 
@@ -39,8 +40,15 @@ async function ensureBrandByName(name: string | null) {
   const slug = name?.trim() ? slugify(name) : PENDING_BRAND_SLUG;
   const cached = brandCache.get(slug);
   if (cached) return cached;
+  const brandType = inferBrandType(label, slug);
   const existing = await db.query.brands.findFirst({ where: eq(brands.slug, slug) });
   if (existing) {
+    if (existing.brandType !== brandType && slug !== PENDING_BRAND_SLUG) {
+      await db
+        .update(brands)
+        .set({ brandType, updatedAt: new Date() })
+        .where(eq(brands.id, existing.id));
+    }
     brandCache.set(slug, existing.id);
     return existing.id;
   }
@@ -49,7 +57,7 @@ async function ensureBrandByName(name: string | null) {
     .values({
       name: label,
       slug,
-      brandType: "arabian",
+      brandType,
       description: name?.trim()
         ? `Marca importada do catálogo fornecedor (${label}).`
         : "Marca a confirmar antes de publicar na vitrine.",

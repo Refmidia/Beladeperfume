@@ -402,6 +402,54 @@
   border-top: 1px solid var(--border);
 }
 .tracking-page,
+.asaas-pix-panel {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  margin-block: 24px;
+  padding: 20px;
+  border: 1px solid var(--sf-line);
+  border-radius: var(--sf-radius-lg);
+  background: var(--sf-surface);
+  text-align: center;
+}
+.asaas-pix-panel h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+.asaas-pix-qr {
+  border-radius: 8px;
+  background: #fff;
+}
+.asaas-pix-copy {
+  display: grid;
+  gap: 6px;
+  width: min(100%, 420px);
+  text-align: left;
+  font-size: 13px;
+}
+.asaas-pix-copy textarea {
+  width: 100%;
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  resize: vertical;
+}
+.asaas-card-panel {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  margin-block: 24px;
+  padding: 20px;
+  border: 1px solid var(--sf-line);
+  border-radius: var(--sf-radius-lg);
+  background: var(--sf-surface);
+  text-align: center;
+}
+.asaas-card-panel h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
 .confirmation-page {
   max-width: 760px;
 }

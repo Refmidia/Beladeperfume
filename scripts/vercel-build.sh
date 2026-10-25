@@ -8,5 +8,6 @@ if [ "$VERCEL_ENV" = "production" ]; then
   # Idempotent: creates the admin once, never resets it. Demo data unless
   # SEED_DEMO_DATA=false. Refuses the demo admin credentials.
   pnpm db:seed
+  pnpm db:ensure-home
 fi
 pnpm build

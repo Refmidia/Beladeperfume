@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState, useRef } from "react";
-import { Search, X } from "lucide-react";
+import { useState } from "react";
+import { Search } from "lucide-react";
 import { storeConfig } from "../../../store.config";
 import { copy } from "@/lib/storefront/copy";
 import { CartDrawer } from "./cart";
@@ -38,69 +38,44 @@ function AnnouncementItem({
   return <span>{message.title}</span>;
 }
 
+function AnnouncementCycle({
+  messages,
+  duplicate,
+}: {
+  messages: { title: string | null; href: string | null; rel?: string }[];
+  duplicate?: boolean;
+}) {
+  return (
+    <span className="announcement-marquee-group" aria-hidden={duplicate || undefined}>
+      {messages.map((message, i) => (
+        <span className="announcement-marquee-item" key={`${duplicate ? "dup-" : ""}${i}`}>
+          {i > 0 ? (
+            <span className="announcement-sep" aria-hidden>
+              ·
+            </span>
+          ) : null}
+          <AnnouncementItem message={message} />
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export function Announcement({
   messages,
 }: {
   messages: { title: string | null; href: string | null; rel?: string }[];
 }) {
-  const announcementRef = useRef<HTMLDivElement>(null);
-  const [hidden, setHidden] = useState(false);
-  useEffect(() => {
-    let dismissed = false;
-    try {
-      dismissed = !!sessionStorage.getItem("attar-announcement-dismissed");
-    } catch {}
-    if (dismissed) {
-      const timer = setTimeout(() => setHidden(true), 0);
-      return () => clearTimeout(timer);
-    }
-  }, []);
-  if (hidden || !messages.length) return null;
-
-  const row = (
-    <span className="announcement-marquee-group">
-      {messages.map((message, i) => (
-        <span className="announcement-marquee-item" key={i}>
-          <AnnouncementItem message={message} />
-          <span className="announcement-sep" aria-hidden>
-            {" "}
-            ·{" "}
-          </span>
-        </span>
-      ))}
-    </span>
-  );
+  if (!messages.length) return null;
 
   return (
-    <div className="announcement" ref={announcementRef}>
+    <div className="announcement">
       <div className="announcement-marquee" aria-live="off">
         <div className="announcement-marquee-track">
-          {row}
-          <span className="announcement-marquee-group" aria-hidden>
-            {messages.map((message, i) => (
-              <span className="announcement-marquee-item" key={`dup-${i}`}>
-                <AnnouncementItem message={message} />
-                <span className="announcement-sep" aria-hidden>
-                  {" "}
-                  ·{" "}
-                </span>
-              </span>
-            ))}
-          </span>
+          <AnnouncementCycle messages={messages} />
+          <AnnouncementCycle messages={messages} duplicate />
         </div>
       </div>
-      <button
-        className="announcement-close"
-        aria-label={copy.announcement.dismiss}
-        onClick={() => {
-          setHidden(true);
-          try {
-            sessionStorage.setItem("attar-announcement-dismissed", "1");
-          } catch {}
-        }}
-      >
-        <X size={14} />
-      </button>
     </div>
   );
 }

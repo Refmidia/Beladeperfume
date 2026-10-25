@@ -5,7 +5,10 @@ import { db } from "@/db";
 import { orders } from "@/db/schema";
 import { getPublicOrder } from "@/lib/orders/public-order";
 import { OrderSummary } from "@/components/storefront/order-tracking";
+import { AsaasCardPanel } from "@/components/storefront/asaas-card";
+import { AsaasPixPanel } from "@/components/storefront/asaas-pix";
 import { PaymentInstructions } from "@/components/storefront/checkout";
+import { asaasEnabled } from "@/lib/payments/adapter";
 import { SuccessMark } from "@/components/storefront/ui";
 import { copy } from "@/lib/storefront/copy";
 import { storeConfig as config } from "../../../../../../store.config";
@@ -57,12 +60,19 @@ export default async function Page({
           <span>{copy.orderConfirm.stepShipHint}</span>
         </li>
       </ol>
-      {record.paymentMethod !== "cod" && (
-        <section>
-          <p className="confirmation-note">{copy.orderConfirm.txnReceived(record.paymentTxnId ?? "")}</p>
-          <PaymentInstructions method={record.paymentMethod} />
-        </section>
-      )}
+      {record.paymentMethod !== "cod" &&
+        (asaasEnabled() && record.paymentMethod === "bkash" ? (
+          <AsaasPixPanel order={record} />
+        ) : asaasEnabled() && record.paymentMethod === "nagad" ? (
+          <AsaasCardPanel order={record} />
+        ) : (
+          <section>
+            <p className="confirmation-note">
+              {copy.orderConfirm.txnReceived(record.paymentTxnId ?? "")}
+            </p>
+            <PaymentInstructions method={record.paymentMethod} />
+          </section>
+        ))}
       <div className="confirmation-links">
         <Link className="button primary" href="/track-order">
           {copy.orderConfirm.track}

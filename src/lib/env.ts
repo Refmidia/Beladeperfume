@@ -65,6 +65,16 @@ const envSchema = z
     TELEGRAM_BOT_TOKEN: z.string().optional(),
     TELEGRAM_CHAT_ID: z.string().optional(),
 
+    /* ------------------------- Payments (Asaas) -------------------------- */
+    /** manual = checkout atual; asaas = cobrança PIX via API (mesma conta em vários sites). */
+    PAYMENT_ADAPTER: z.enum(["manual", "asaas"]).default("manual"),
+    ASAAS_API_KEY: z.string().optional(),
+    ASAAS_ENVIRONMENT: z.enum(["production", "sandbox"]).default("production"),
+    /** Opcional: sobrescreve a URL da API (ex.: sandbox). */
+    ASAAS_API_URL: z.url().optional(),
+    /** Token que a Asaas envia no webhook (Integrações → Webhooks). */
+    ASAAS_WEBHOOK_TOKEN: z.string().min(8).optional(),
+
     /* ------------------------- Storage adapter --------------------------- */
     /**
      * Where uploaded product images live.
@@ -124,6 +134,11 @@ const envSchema = z
         fail("TELEGRAM_BOT_TOKEN", "Required when NOTIFY_ADAPTER=telegram");
       if (!env.TELEGRAM_CHAT_ID)
         fail("TELEGRAM_CHAT_ID", "Required when NOTIFY_ADAPTER=telegram");
+    }
+
+    if (env.PAYMENT_ADAPTER === "asaas" && env.NODE_ENV === "production") {
+      if (!env.ASAAS_API_KEY)
+        fail("ASAAS_API_KEY", "Required when PAYMENT_ADAPTER=asaas");
     }
 
     if (env.STORAGE_ADAPTER === "s3") {

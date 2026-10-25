@@ -19,6 +19,13 @@ type Method = "cod" | "bkash" | "nagad";
 export function PaymentInstructions({ method }: { method: Method }) {
   const payment = config.checkout.paymentMethods[method];
   if (!payment.enabled) return null;
+  if (config.checkout.paymentProvider === "asaas" && method !== "cod") {
+    return (
+      <div className="payment-instructions">
+        <p>{payment.instructions}</p>
+      </div>
+    );
+  }
   return (
     <div className="payment-instructions">
       {"number" in payment && (
@@ -50,6 +57,8 @@ export function CheckoutPage() {
   const submitting = useRef(false),
     requestId = useRef<string | null>(null);
   const totals = deliveryTotals(cart.subtotal, zoneId, cart.discount);
+  const asaasOnline =
+    config.checkout.paymentProvider === "asaas" && method !== "cod";
   const submitDisabled = pending || cart.busy || Boolean(cart.error) || !enabled.length;
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -241,7 +250,14 @@ export function CheckoutPage() {
             ) : (
               <PaymentInstructions method={method} />
             )}
+            {asaasOnline &&
+              field("cpfCnpj", copy.checkout.cpfCnpj, {
+                max: 20,
+                autoComplete: "off",
+                placeholder: copy.checkout.cpfCnpjPlaceholder,
+              })}
             {method !== "cod" &&
+              !asaasOnline &&
               field("txnId", copy.checkout.txnId, {
                 max: 80,
                 autoComplete: "off",

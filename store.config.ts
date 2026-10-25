@@ -103,6 +103,11 @@ export const storeConfigSchema = () => z.object({
     }),
     /** Shown under the checkout form. Keep expectations honest. */
     confirmationNote: z.string(),
+    /**
+     * manual = PIX/cartão com chave e ID informados pelo cliente.
+     * asaas = cobrança PIX gerada na Asaas (requer ASAAS_API_KEY no .env).
+     */
+    paymentProvider: z.enum(["manual", "asaas"]),
   }),
 
   features: z.object({
@@ -210,18 +215,19 @@ const config: StoreConfig = {
         number: "contato@beladeperfume.com.br",
         accountType: "personal",
         instructions:
-          "Envie o valor total via PIX para a chave acima e informe o ID da transação abaixo. Validamos na ligação de confirmação.",
+          "Após confirmar o pedido, você verá o QR Code PIX gerado automaticamente (Asaas). Nossa equipe liga para confirmar o envio.",
       },
       nagad: {
         enabled: true,
         number: null,
         accountType: "personal",
         instructions:
-          "Pagamento com cartão de crédito ou débito. O valor do cartão será confirmado na ligação antes do envio.",
+          "Após confirmar o pedido, use o botão para pagar na página segura do Asaas (crédito ou débito). Valor já é o preço cartão do site.",
       },
     },
     confirmationNote:
       "Depois do pedido, nossa equipe liga em algumas horas para confirmar fragrâncias, endereço e pagamento. Nada é enviado sem sua confirmação.",
+    paymentProvider: "asaas",
   },
 
   features: {

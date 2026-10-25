@@ -1,6 +1,8 @@
 import { z } from "@/lib/zod";
 import { isValidPhone, normalizePhone } from "@/lib/phone";
 import { cartSchema } from "@/lib/cart/schema";
+import { checkoutPaymentProvider } from "@/lib/payments/adapter";
+import { normalizeCpfCnpj } from "@/lib/payments/asaas/pix";
 import { storeConfig as config } from "../../../store.config";
 const required = (max: number) =>
   z.string().trim().min(1, "Preencha este campo.").max(max);
@@ -30,6 +32,7 @@ export const checkoutSchema = z
         "Escolha uma forma de pagamento disponível.",
       ),
     txnId: z.string().trim().max(80).optional(),
+    cpfCnpj: z.string().trim().max(20).optional(),
     note: z.string().trim().max(1000).optional(),
     website: z.string().max(200).optional(),
     // The server re-validates the code; the expected discount guards against
@@ -40,12 +43,28 @@ export const checkoutSchema = z
     requestId: z.uuid(),
   })
   .superRefine((data, ctx) => {
-    if (data.paymentMethod !== "cod" && !data.txnId?.trim())
+    if (data.paymentMethod === "cod") return;
+    const asaasOnline =
+      checkoutPaymentProvider() === "asaas" &&
+      (data.paymentMethod === "bkash" || data.paymentMethod === "nagad");
+    if (asaasOnline) {
+      const digits = normalizeCpfCnpj(data.cpfCnpj ?? "");
+      if (digits.length !== 11 && digits.length !== 14) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["cpfCnpj"],
+          message: "Informe CPF (11 dígitos) ou CNPJ (14 dígitos) para o pagamento online.",
+        });
+      }
+      return;
+    }
+    if (!data.txnId?.trim()) {
       ctx.addIssue({
         code: "custom",
         path: ["txnId"],
         message: "Informe o ID da transação do pagamento.",
       });
+    }
   });
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
 /**

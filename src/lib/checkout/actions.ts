@@ -4,12 +4,15 @@ import { after } from "next/server";
 import { cookies, headers } from "next/headers";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { orderItems } from "@/db/schema";
+import { orderItems, orders } from "@/db/schema";
 import { checkoutSchema, trackingSchema } from "./schema";
 import { createOrder, CheckoutError } from "./create-order";
 import { clientIp, takeRateLimit } from "@/lib/rate-limit";
 import { notifyNewOrder } from "@/lib/notify";
 import { getPublicOrder } from "@/lib/orders/public-order";
+import { asaasEnabled } from "@/lib/payments/adapter";
+import { attachAsaasPaymentToOrder } from "@/lib/payments/sync-asaas-order";
+import { AsaasError } from "@/lib/payments/asaas/client";
 export async function placeOrder(input: unknown) {
   if (await demoWriteRefused(await headers()))
     return { error: "This is a demo store. Start your own demo store (Try the admin, at the top) to place orders." };
@@ -30,14 +33,53 @@ export async function placeOrder(input: unknown) {
     };
   try {
     const result = await createOrder(parsed.data);
-    // An unguessable order ID grants this browser access to its confirmation.
-    (await cookies()).set("attar-order", result.order.id, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 3600,
-      path: "/order/confirmed",
-    });
+    async function grantConfirmationAccess() {
+      (await cookies()).set("attar-order", result.order.id, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 3600,
+        path: "/order/confirmed",
+      });
+    }
+    const asaasMethod = parsed.data.paymentMethod;
+    if (
+      result.created &&
+      asaasEnabled() &&
+      (asaasMethod === "bkash" || asaasMethod === "nagad")
+    ) {
+      try {
+        await attachAsaasPaymentToOrder(
+          result.order,
+          {
+            name: parsed.data.name,
+            phone: parsed.data.phone,
+            email: parsed.data.email,
+            cpfCnpj: parsed.data.cpfCnpj ?? "",
+          },
+          asaasMethod,
+        );
+        const [fresh] = await db
+          .select()
+          .from(orders)
+          .where(eq(orders.id, result.order.id))
+          .limit(1);
+        if (fresh) result.order = fresh;
+      } catch (error) {
+        await grantConfirmationAccess();
+        const hint =
+          error instanceof AsaasError
+            ? error.message
+            : asaasMethod === "bkash"
+              ? "Não foi possível gerar o PIX."
+              : "Não foi possível abrir o pagamento com cartão.";
+        return {
+          error: `${hint} Seu pedido ${result.order.orderNumber} foi registrado; ligue para a loja para pagar.`,
+          orderNumber: result.order.orderNumber,
+        };
+      }
+    }
+    await grantConfirmationAccess();
     if (result.created)
       after(async () => {
         try {

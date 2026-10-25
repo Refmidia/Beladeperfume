@@ -115,7 +115,13 @@ export async function createOrder(input: unknown) {
         couponCode: coupon?.code ?? null,
         total: totals.total,
         paymentMethod: data.paymentMethod,
-        paymentTxnId: data.paymentMethod === "cod" ? null : data.txnId,
+        paymentTxnId:
+          data.paymentMethod === "cod"
+            ? null
+            : storeConfig.checkout.paymentProvider === "asaas" &&
+                (data.paymentMethod === "bkash" || data.paymentMethod === "nagad")
+              ? null
+              : data.txnId,
         customerNote: data.note || null,
       })
       .returning();

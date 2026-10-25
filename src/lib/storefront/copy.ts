@@ -344,6 +344,26 @@ export const copy = {
     paymentLegend: "Forma de pagamento",
     noPayment: "Nenhuma forma de pagamento disponível. Ligue para a loja.",
     txnId: "ID da transação PIX",
+    cpfCnpj: "CPF ou CNPJ",
+    cpfCnpjPlaceholder: "000.000.000-00",
+    asaasPixTitle: "Pague com PIX",
+    asaasPixTotal: "Valor:",
+    asaasPixQrAlt: "QR Code PIX",
+    asaasPixCopyLabel: "Pix copia e cola",
+    asaasPixPaid: "Pagamento recebido. Nossa equipe ainda confirma o pedido por telefone antes do envio.",
+    asaasPixPending:
+      "Após pagar, aguarde a confirmação automática. Nossa equipe liga para confirmar endereço e itens.",
+    asaasPixUnavailable:
+      "Não carregamos o QR Code agora. Abra o pedido pelo rastreio ou ligue para a loja.",
+    asaasCardTitle: "Pagamento com cartão",
+    asaasCardTotal: "Valor no cartão:",
+    asaasCardHint:
+      "Você será direcionado à página segura do Asaas para informar cartão de crédito ou débito. Não armazenamos dados do cartão.",
+    asaasCardPayButton: "Pagar com cartão agora",
+    asaasCardPaid:
+      "Pagamento recebido. Nossa equipe ainda confirma o pedido por telefone antes do envio.",
+    asaasCardUnavailable:
+      "Não abrimos o link de cartão agora. Ligue para a loja ou tente rastrear o pedido mais tarde.",
     orderNote: "Observação do pedido",
     yourOrder: "Seu pedido",
     qty: "Qtd",
