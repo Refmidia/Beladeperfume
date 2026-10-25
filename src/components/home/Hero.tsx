@@ -1,20 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { siteConfig } from "@/lib/config";
 
 export function Hero() {
   return (
     <section className="relative bg-background-secondary overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <pattern id="hero-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-            <circle cx="10" cy="10" r="1" fill="currentColor" />
-          </pattern>
-          <rect x="0" y="0" width="100%" height="100%" fill="url(#hero-pattern)" />
-        </svg>
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <Image
+          src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=1920&q=80"
+          alt="Perfumes árabes luxuosos"
+          fill
+          className="object-cover opacity-20"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-background-secondary via-background-secondary/95 to-background-secondary/80" />
       </div>
 
       <div className="container-shop relative">
@@ -60,7 +64,7 @@ export function Hero() {
             </div>
           </motion.div>
 
-          {/* Visual Element */}
+          {/* Visual Element - Perfume Image */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -76,18 +80,13 @@ export function Hero() {
                 <div className="w-[75%] h-[75%] rounded-full border border-gold/30" />
               </div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-[60%] h-[60%] rounded-full bg-gold/10" />
-              </div>
-              
-              {/* Center content */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <span className="font-serif text-6xl sm:text-7xl lg:text-8xl text-gold font-bold">
-                    OUD
-                  </span>
-                  <p className="text-foreground-muted text-sm mt-2 tracking-widest uppercase">
-                    Premium Collection
-                  </p>
+                <div className="w-[60%] h-[60%] rounded-full bg-gold/10 overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1594035910387-fea47794261f?w=600&q=80"
+                    alt="Frasco de perfume luxuoso"
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               </div>
             </div>

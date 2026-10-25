@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bela de Perfume
 
-## Getting Started
+Loja virtual premium de perfumes árabes construída com Next.js 15+, React, TypeScript e Tailwind CSS 4.
 
-First, run the development server:
+## Stack Tecnológico
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Framework:** Next.js 15+ (App Router)
+- **Linguagem:** TypeScript (strict mode)
+- **Estilização:** Tailwind CSS 4
+- **Componentes:** Radix UI + componentes customizados
+- **Ícones:** Lucide React
+- **Animações:** Framer Motion
+- **Backend (planejado):** Supabase (PostgreSQL, Auth, Storage)
+- **Pagamento (planejado):** Mercado Pago
+- **Frete (planejado):** Melhor Envio
+
+## Funcionalidades Implementadas
+
+### Design System
+- Paleta de cores premium (creme, dourado, tons terrosos)
+- Tipografia serifada (Cormorant Garamond) + sans-serif (Manrope)
+- Componentes responsivos Mobile First
+- Animações suaves com Framer Motion
+
+### Páginas
+- **Home:** Hero com imagem, Best Sellers, Banners de Categorias, Novidades, Pronta Entrega, Quiz de Fragrâncias, Benefícios
+- **Catálogo:** Grid responsivo (2 colunas mobile, 4 desktop), Filtros funcionais, Ordenação
+- **Produto:** Detalhes com galeria, pirâmide olfativa, produtos relacionados
+- **Carrinho:** Página placeholder
+
+### Componentes Chave
+- **ProductCard:** Design premium com moldura arredondada, selo de desconto, botões de ação
+- **Header:** Responsivo com menu mobile em drawer
+- **Footer:** Newsletter, links úteis, redes sociais
+- **Filtros:** Drawer mobile, sidebar desktop
+
+## Configuração Central
+
+O nome da loja e configurações estão centralizados em `src/lib/config.ts`:
+
+```typescript
+import { siteConfig } from "@/lib/config";
+
+// Uso:
+siteConfig.name        // "Bela de Perfume"
+siteConfig.tagline     // "Perfumes Árabes Premium"
+siteConfig.contact     // email, phone, whatsapp
+siteConfig.social      // instagram, facebook, whatsapp
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Começando
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Instalar dependências
+npm install
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Iniciar servidor de desenvolvimento
+npm run dev
 
-## Learn More
+# Build de produção
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Estrutura do Projeto
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/                    # App Router pages
+│   ├── page.tsx           # Home
+│   ├── catalogo/          # Catálogo com filtros
+│   ├── produto/[slug]/    # Página de produto
+│   └── carrinho/          # Carrinho
+├── components/
+│   ├── home/              # Componentes da home
+│   ├── layout/            # Header, Footer
+│   └── product/           # Cards, Grid, Filtros
+├── data/
+│   └── demo-products.ts   # Dados demonstrativos
+├── lib/
+│   ├── config.ts          # Configuração central da loja
+│   └── utils.ts           # Utilitários
+└── types/
+    └── index.ts           # Tipos TypeScript
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Imagens
 
-## Deploy on Vercel
+As imagens dos produtos são de [Unsplash](https://unsplash.com) com licença livre para uso comercial. Em produção, substituir pelas imagens reais dos produtos.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Dados Demonstrativos
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Os produtos exibidos são **FICTÍCIOS** e criados apenas para demonstração. Não representam produtos reais.
+
+## Mobile First
+
+- Grid de catálogo: 2 colunas no mobile, 3 no tablet, 4 no desktop
+- Cards com padding interno e bordas arredondadas (17px)
+- Header sticky com ícones elegantes
+- Filtros em drawer no mobile
+
+## Próximos Passos
+
+- [ ] Integração Supabase (banco, auth, storage)
+- [ ] Integração Mercado Pago
+- [ ] Integração Melhor Envio
+- [ ] Carrinho funcional
+- [ ] Checkout completo
+- [ ] Área do cliente
