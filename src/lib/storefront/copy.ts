@@ -354,7 +354,7 @@ export const copy = {
     asaasPixPending:
       "Após pagar, aguarde a confirmação automática. Nossa equipe liga para confirmar endereço e itens.",
     asaasPixUnavailable:
-      "Não carregamos o QR Code agora. Abra o pedido pelo rastreio ou ligue para a loja.",
+      "Não carregamos o QR Code agora. Tente atualizar a página ou ligue para a loja.",
     asaasCardTitle: "Pagamento com cartão",
     asaasCardTotal: "Valor no cartão:",
     asaasCardHint:
@@ -554,6 +554,16 @@ export const copy = {
   orderConfirm: {
     lookupTitle: "Consultar seu pedido",
     lookupHint: "Use o número do pedido e o celular da compra para ver os detalhes.",
+    payEyebrow: "Quase lá",
+    payTitle: "Finalize o pagamento",
+    payOrderRef: (n: string) => `Pedido ${n} — conclua o PIX ou cartão abaixo para registrar a compra.`,
+    payAfterHint:
+      "Depois que o pagamento for confirmado, você verá o resumo do pedido e poderá rastrear a entrega.",
+    continueShopping: "Continuar comprando",
+    asaasNotConfigured:
+      "Pagamento online temporariamente indisponível. Ligue para a loja para concluir o pedido.",
+    asaasChargeMissing:
+      "Não geramos a cobrança. Volte ao checkout e tente finalizar de novo, ou ligue para a loja.",
     received: "Pedido recebido",
     txnReceived: (id: string) =>
       `ID da transação ${id} recebido. Confirmaremos o pagamento na ligação. Não envie novamente.`,

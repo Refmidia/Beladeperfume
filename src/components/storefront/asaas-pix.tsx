@@ -5,8 +5,11 @@ import type { orders } from "@/db/schema";
 import { AsaasError } from "@/lib/payments/asaas/client";
 
 export async function AsaasPixPanel({ order }: { order: typeof orders.$inferSelect }) {
-  if (!asaasEnabled() || order.paymentMethod !== "bkash" || !order.paymentTxnId) {
+  if (!asaasEnabled() || order.paymentMethod !== "bkash") {
     return null;
+  }
+  if (!order.paymentTxnId) {
+    return <p className="confirmation-note">{copy.checkout.asaasPixUnavailable}</p>;
   }
 
   let qr: Awaited<ReturnType<typeof fetchPixQrCode>> | null = null;

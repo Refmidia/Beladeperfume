@@ -2,7 +2,7 @@
 import { demoWriteRefused } from "@/lib/demo/session";
 import { after } from "next/server";
 import { cookies, headers } from "next/headers";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { orderItems, orders } from "@/db/schema";
 import { checkoutSchema, trackingSchema } from "./schema";
@@ -43,11 +43,11 @@ export async function placeOrder(input: unknown) {
       });
     }
     const asaasMethod = parsed.data.paymentMethod;
-    if (
-      result.created &&
+    const needsAsaasCharge =
       asaasEnabled() &&
-      (asaasMethod === "bkash" || asaasMethod === "nagad")
-    ) {
+      (asaasMethod === "bkash" || asaasMethod === "nagad") &&
+      !result.order.paymentTxnId;
+    if (needsAsaasCharge) {
       try {
         await attachAsaasPaymentToOrder(
           result.order,
@@ -66,7 +66,6 @@ export async function placeOrder(input: unknown) {
           .limit(1);
         if (fresh) result.order = fresh;
       } catch (error) {
-        await grantConfirmationAccess();
         const hint =
           error instanceof AsaasError
             ? error.message
@@ -74,8 +73,7 @@ export async function placeOrder(input: unknown) {
               ? "Não foi possível gerar o PIX."
               : "Não foi possível abrir o pagamento com cartão.";
         return {
-          error: `${hint} Seu pedido ${result.order.orderNumber} foi registrado; ligue para a loja para pagar.`,
-          orderNumber: result.order.orderNumber,
+          error: `${hint} Tente de novo em instantes ou ligue para a loja.`,
         };
       }
     }
@@ -104,6 +102,27 @@ export async function placeOrder(input: unknown) {
     };
   }
 }
+/** Cookie da confirmação: polling leve até o webhook marcar pagamento. */
+export async function getOrderPaymentStatusForConfirmation(orderNumber: string) {
+  if (!(await takeRateLimit("checkout-ip", clientIp(await headers()), 60)))
+    return { error: "Muitas tentativas. Aguarde um momento." as const };
+  const token = (await cookies()).get("attar-order")?.value;
+  if (!token) return { error: "Sessão expirada." as const };
+  const [record] = await db
+    .select({
+      paymentVerified: orders.paymentVerified,
+      paymentTxnId: orders.paymentTxnId,
+    })
+    .from(orders)
+    .where(and(eq(orders.id, token), eq(orders.orderNumber, orderNumber)))
+    .limit(1);
+  if (!record) return { error: "Pedido não encontrado." as const };
+  return {
+    paymentVerified: record.paymentVerified,
+    hasCharge: Boolean(record.paymentTxnId),
+  };
+}
+
 export async function trackOrder(input: unknown) {
   if (!(await takeRateLimit("tracking-ip", clientIp(await headers()), 30)))
     return { error: "Too many lookups. Please wait 15 minutes." };

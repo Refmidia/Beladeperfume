@@ -96,7 +96,7 @@ export function CheckoutPage() {
     setErrors({});
     try {
       const result = await placeOrder(input);
-      if (result.orderNumber) {
+      if (result.orderNumber && !result.error) {
         cart.clear();
         router.replace(
           `/order/confirmed/${encodeURIComponent(result.orderNumber)}`,
