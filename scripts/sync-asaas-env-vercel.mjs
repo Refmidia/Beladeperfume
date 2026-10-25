@@ -36,9 +36,20 @@ function parseEnv(text) {
 function vercelEnvAdd(name, value, env = "production") {
   const r = spawnSync(
     "npx",
-    ["vercel", "env", "add", name, env, "--force"],
+    [
+      "vercel",
+      "env",
+      "add",
+      name,
+      "--environment",
+      env,
+      "--force",
+      "--yes",
+      "--sensitive",
+      "--value",
+      value,
+    ],
     {
-      input: value,
       cwd: root,
       encoding: "utf8",
       shell: true,

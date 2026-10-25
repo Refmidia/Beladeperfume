@@ -68,7 +68,10 @@ const envSchema = z
     /* ------------------------- Payments (Asaas) -------------------------- */
     /** manual = checkout atual; asaas = cobrança PIX via API (mesma conta em vários sites). */
     PAYMENT_ADAPTER: z.enum(["manual", "asaas"]).default("manual"),
-    ASAAS_API_KEY: z.string().optional(),
+    ASAAS_API_KEY: z
+      .string()
+      .optional()
+      .transform((value) => (value?.trim() ? value.trim() : undefined)),
     ASAAS_ENVIRONMENT: z.enum(["production", "sandbox"]).default("production"),
     /** Opcional: sobrescreve a URL da API (ex.: sandbox). */
     ASAAS_API_URL: z.url().optional(),
@@ -136,10 +139,8 @@ const envSchema = z
         fail("TELEGRAM_CHAT_ID", "Required when NOTIFY_ADAPTER=telegram");
     }
 
-    if (env.PAYMENT_ADAPTER === "asaas" && env.NODE_ENV === "production") {
-      if (!env.ASAAS_API_KEY)
-        fail("ASAAS_API_KEY", "Required when PAYMENT_ADAPTER=asaas");
-    }
+    // Asaas: validated when creating charges (src/lib/payments/asaas/client.ts).
+    // Missing ASAAS_API_KEY must not take down the whole storefront.
 
     if (env.STORAGE_ADAPTER === "s3") {
       for (const key of [

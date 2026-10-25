@@ -577,6 +577,8 @@ export const copy = {
     pageLoad: "Não foi possível carregar esta página",
     tryAgain: "Tente novamente.",
     retry: "Tentar de novo",
+    pageNotFound: "Página não encontrada",
+    pageNotFoundHint: "Esta página pode ter sido movida ou não está mais disponível.",
   },
   order: {
     received: "Pedido recebido",
