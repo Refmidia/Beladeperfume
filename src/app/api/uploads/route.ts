@@ -1,8 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { adminSession } from "@/lib/admin/session";
 import { getStorage } from "@/lib/storage";
-import { publishCatalogWebp } from "@/lib/storage/catalog";
-import { MAX_UPLOAD_BYTES, validateImage } from "@/lib/storage/image";
+import {
+  catalogUploadErrorMessage,
+  uploadCatalogBytes,
+} from "@/lib/admin/catalog-upload";
+import { MAX_UPLOAD_BYTES } from "@/lib/storage/image";
 import { takeRateLimit } from "@/lib/rate-limit";
 import { env } from "@/lib/env";
 import { putSandboxUpload, SandboxUploadError } from "@/lib/demo/uploads";
@@ -35,75 +38,34 @@ export async function POST(request: Request) {
       { status: 413 },
     );
   try {
-    // Bound streaming bodies as well as requests with a Content-Length header.
-    const reader = request.body?.getReader();
-    if (!reader) throw new Error("Missing image.");
-    const chunks: Uint8Array[] = [];
-    let size = 0;
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      size += value.length;
-      if (size > MAX_UPLOAD_BYTES + 65536) {
-        await reader.cancel();
-        return Response.json(
-          { error: "Choose an image under 5 MB." },
-          { status: 413 },
-        );
-      }
-      chunks.push(value);
-    }
-    const body = Buffer.concat(chunks);
-    const data = await new Response(body, {
-      headers: { "Content-Type": request.headers.get("content-type") ?? "" },
-    }).formData();
+    const data = await request.formData();
     const file = data.get("file");
     if (!(file instanceof Blob)) throw new Error("Missing image.");
-    const bytes = await validateImage(
-      new Uint8Array(await file.arrayBuffer()),
-      file.type || "image/webp",
-    );
-    // Demo visitors (DEMO_MODE) upload into their own sandbox, never to storage.
-    if (env.DEMO_MODE && session.user.role === "demo") return Response.json(await putSandboxUpload(bytes));
+    if (file.size > MAX_UPLOAD_BYTES + 65536)
+      return Response.json(
+        { error: "Choose an image under 5 MB." },
+        { status: 413 },
+      );
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    if (env.DEMO_MODE && session.user.role === "demo")
+      return Response.json(await putSandboxUpload(bytes));
     const catalogSlug = data.get("catalogSlug");
     if (typeof catalogSlug === "string" && catalogSlug.trim()) {
-      const url = await publishCatalogWebp(bytes, catalogSlug.trim());
+      const url = await uploadCatalogBytes(
+        bytes,
+        file.type || "image/webp",
+        catalogSlug.trim(),
+      );
       return Response.json({ url, catalog: true });
     }
     const key = `${randomUUID()}.webp`;
     const url = await getStorage().putObject(bytes, key);
     return Response.json({ url, key });
   } catch (error) {
-    if (error instanceof SandboxUploadError) return Response.json({ error: error.message }, { status: 400 });
-    const message = error instanceof Error ? error.message : "";
-    if (message === "STORAGE_CLOUD") {
-      return Response.json(
-        {
-          error:
-            "Para enviar foto pelo celular, configure armazenamento na nuvem (Cloudflare R2 ou Supabase — grátis). Enquanto isso, cole um link https:// público da imagem.",
-        },
-        { status: 503 },
-      );
-    }
-    if (message === "Storage upload failed.") {
-      return Response.json(
-        {
-          error:
-            "Falha ao gravar no R2/S3. Confira S3_* na Vercel (token R2 com permissão de escrita no bucket).",
-        },
-        { status: 502 },
-      );
-    }
-    if (message && message !== "Missing image.") {
-      return Response.json({ error: message }, { status: 400 });
-    }
-    const onVercel = Boolean(process.env.VERCEL);
+    if (error instanceof SandboxUploadError)
+      return Response.json({ error: error.message }, { status: 400 });
     return Response.json(
-      {
-        error: onVercel
-          ? "Não foi possível enviar a foto. Configure bucket S3/R2 (docs/deploy/storage.md) ou cole um link https:// da imagem."
-          : "Falha no envio. Use JPEG, PNG ou WebP com até 5 MB ou confira STORAGE_ADAPTER no .env.",
-      },
+      { error: catalogUploadErrorMessage(error) },
       { status: 400 },
     );
   }

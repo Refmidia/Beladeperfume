@@ -151,8 +151,9 @@ async function fileToWebpBlob(file: File) {
   );
 }
 
-/** Envia para /catalog/… (nuvem ou public/catalog no PC). Ideal no celular com R2/S3. */
+/** Envia para /catalog/… via Server Action (R2 ou public/catalog no PC). */
 export async function uploadCatalogImage(file: File, catalogSlug: string) {
+  const { uploadCatalogImageAction } = await import("@/lib/admin/actions");
   const blob = await fileToWebpBlob(file);
   const form = new FormData();
   form.append(
@@ -160,10 +161,9 @@ export async function uploadCatalogImage(file: File, catalogSlug: string) {
     new File([blob], "image.webp", { type: "image/webp" }),
   );
   form.append("catalogSlug", catalogSlug);
-  const response = await fetch("/api/uploads", { method: "POST", body: form });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error ?? "Falha ao enviar a foto.");
-  return data.url as string;
+  const result = await uploadCatalogImageAction(form);
+  if (!result.ok || !result.url) throw new Error(result.message);
+  return result.url;
 }
 
 export async function uploadImage(file: File) {

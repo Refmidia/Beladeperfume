@@ -244,6 +244,7 @@ export type ActionResult = {
   ok: boolean;
   message: string;
   id?: string;
+  url?: string;
   errors?: Record<string, string>;
 };
 export function validationFailure(error: z.ZodError): ActionResult {

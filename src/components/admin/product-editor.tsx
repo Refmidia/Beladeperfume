@@ -297,15 +297,6 @@ export function ProductEditor({
 
   function confirmCatalogLink(url: string, alt: string) {
     const normalized = normalizeProductImageUrl(url);
-    if (
-      normalized.startsWith("/catalog/") &&
-      !normalized.startsWith("http")
-    ) {
-      toast.error(
-        "Este link ainda não tem foto no servidor. Use «Enviar foto» no pop-up ou aguarde «Foto adicionada» antes de salvar.",
-      );
-      return;
-    }
     setData((d) => ({
       ...d,
       images: [...d.images, { url: normalized, alt: alt || d.name || pe.productEditor.productImageAlt }],

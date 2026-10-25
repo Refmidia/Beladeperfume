@@ -21,6 +21,37 @@ import { env } from "@/lib/env";
 import { hasDeliveredPurchase } from "@/lib/reviews/server";
 import { storeConfig } from "../../../store.config";
 import { adminCopy as copy } from "./copy";
+import { takeRateLimit } from "@/lib/rate-limit";
+import {
+  catalogUploadErrorMessage,
+  uploadCatalogBytes,
+} from "./catalog-upload";
+import { MAX_UPLOAD_BYTES } from "@/lib/storage/image";
+
+export async function uploadCatalogImageAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const user = await requireAdmin();
+  if (!(await takeRateLimit("upload", user.id, 60)))
+    return { ok: false, message: "Muitos envios. Tente de novo em alguns minutos." };
+  const file = formData.get("file");
+  const catalogSlug = formData.get("catalogSlug");
+  if (!(file instanceof Blob) || typeof catalogSlug !== "string" || !catalogSlug.trim())
+    return invalidRequest;
+  if (file.size > MAX_UPLOAD_BYTES + 65536)
+    return { ok: false, message: "Use uma imagem de até 5 MB." };
+  try {
+    const url = await uploadCatalogBytes(
+      new Uint8Array(await file.arrayBuffer()),
+      file.type || "image/webp",
+      catalogSlug,
+    );
+    return { ok: true, message: copy.productEditor.catalogUploadOk, url };
+  } catch (error) {
+    return { ok: false, message: catalogUploadErrorMessage(error) };
+  }
+}
+
 const tables = {
   brands: s.brands,
   notes: s.notes,

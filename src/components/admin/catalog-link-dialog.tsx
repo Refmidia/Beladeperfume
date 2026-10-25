@@ -29,6 +29,10 @@ export type PendingCatalogLink = {
   uploadError?: string;
 };
 
+function slugFromCatalogPath(path: string) {
+  return path.replace(/^\/catalog\//, "").replace(/\.webp$/i, "") || "imagem";
+}
+
 export function CatalogLinkDialog({
   pending,
   onConfirm,
@@ -42,23 +46,23 @@ export function CatalogLinkDialog({
   const [url, setUrl] = useState("");
   const [alt, setAlt] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [lastError, setLastError] = useState<string | undefined>();
 
   useEffect(() => {
     if (!pending) return;
     setUrl(pending.url);
     setAlt(pending.alt);
+    setLastError(pending.uploadError);
     dialog.current?.showModal();
 
     let cancelled = false;
     void (async () => {
       setUploading(true);
+      setLastError(undefined);
       try {
-        const slug = pending.url
-          .replace(/^\/catalog\//, "")
-          .replace(/\.webp$/i, "");
         const uploaded = await uploadCatalogImage(
           pending.file,
-          slug || "imagem",
+          slugFromCatalogPath(pending.url),
         );
         if (cancelled) return;
         setUrl(uploaded);
@@ -66,7 +70,11 @@ export function CatalogLinkDialog({
         onConfirm(uploaded, pending.alt);
         dialog.current?.close();
       } catch (e) {
-        if (!cancelled) toast.error((e as Error).message);
+        if (!cancelled) {
+          const msg = (e as Error).message;
+          setLastError(msg);
+          toast.error(msg);
+        }
       } finally {
         if (!cancelled) setUploading(false);
       }
@@ -76,6 +84,31 @@ export function CatalogLinkDialog({
       cancelled = true;
     };
   }, [pending]);
+
+  async function publishPhoto() {
+    if (!pending) return;
+    setUploading(true);
+    setLastError(undefined);
+    try {
+      let finalUrl = url.trim();
+      if (!/^https?:\/\//i.test(finalUrl)) {
+        finalUrl = await uploadCatalogImage(
+          pending.file,
+          slugFromCatalogPath(finalUrl),
+        );
+        setUrl(finalUrl);
+      }
+      toast.success(t.productEditor.catalogUploadOk);
+      onConfirm(finalUrl, alt.trim() || pending.alt);
+      dialog.current?.close();
+    } catch (e) {
+      const msg = (e as Error).message;
+      setLastError(msg);
+      toast.error(msg);
+    } finally {
+      setUploading(false);
+    }
+  }
 
   function close() {
     dialog.current?.close();
@@ -120,35 +153,24 @@ export function CatalogLinkDialog({
           <span>{t.productEditor.imageAlt(1)}</span>
           <input value={alt} onChange={(e) => setAlt(e.target.value)} />
         </label>
-        {pending.uploadError && (
+        {lastError && (
           <p className="admin-field-error" role="alert">
-            {pending.uploadError}
+            {lastError}
           </p>
         )}
-        <p className="admin-hint">{t.productEditor.catalogLinkHintMobile}</p>
-        <p className="admin-hint admin-muted">{t.productEditor.catalogLinkHintDesktop}</p>
+        <p className="admin-hint">
+          «Usar este link» envia a foto para a nuvem com o nome acima e adiciona ao produto.
+        </p>
       </div>
       <div className="admin-dialog-foot">
-        <button type="button" className="admin-btn" onClick={close}>
+        <button type="button" className="admin-btn" onClick={close} disabled={uploading}>
           {t.common.cancel}
         </button>
         <button
           type="button"
           className="admin-btn"
           disabled={uploading}
-          onClick={async () => {
-            setUploading(true);
-            try {
-              const slug = url.replace(/^\/catalog\//, "").replace(/\.webp$/i, "");
-              const uploaded = await uploadCatalogImage(pending.file, slug || "imagem");
-              setUrl(uploaded);
-              toast.success(t.productEditor.catalogUploadOk);
-            } catch (e) {
-              toast.error((e as Error).message);
-            } finally {
-              setUploading(false);
-            }
-          }}
+          onClick={() => void publishPhoto()}
         >
           {uploading ? (
             <LoaderCircle size={14} className="admin-spin" />
@@ -160,31 +182,15 @@ export function CatalogLinkDialog({
         <button
           type="button"
           className="admin-btn primary"
-          disabled={
-            uploading ||
-            (!/^https?:\/\//i.test(url.trim()) &&
-              url.trim().startsWith("/catalog/"))
-          }
-          onClick={() => {
-            const trimmed = url.trim();
-            if (!trimmed.startsWith("/") && !/^https?:\/\//i.test(trimmed)) {
-              toast.error("Use um caminho /catalog/… ou https://…");
-              return;
-            }
-            if (
-              trimmed.startsWith("/catalog/") &&
-              !/^https?:\/\//i.test(trimmed)
-            ) {
-              toast.error(
-                "Envie a foto primeiro (URL deve começar com https://).",
-              );
-              return;
-            }
-            onConfirm(trimmed, alt.trim() || pending.alt);
-            dialog.current?.close();
-          }}
+          disabled={uploading}
+          onClick={() => void publishPhoto()}
         >
-          <Link2 size={14} /> {t.productEditor.catalogLinkConfirm}
+          {uploading ? (
+            <LoaderCircle size={14} className="admin-spin" />
+          ) : (
+            <Link2 size={14} />
+          )}{" "}
+          {t.productEditor.catalogLinkConfirm}
         </button>
       </div>
     </dialog>
