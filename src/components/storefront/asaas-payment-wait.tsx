@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { getOrderPaymentStatusForConfirmation } from "@/lib/checkout/actions";
 
 /** Atualiza a página quando o webhook Asaas marca o pagamento. */
-export function AsaasPaymentWait({ orderNumber }: { orderNumber: string }) {
+export function AsaasPaymentWait() {
   const router = useRouter();
   const stopped = useRef(false);
 
@@ -13,10 +13,12 @@ export function AsaasPaymentWait({ orderNumber }: { orderNumber: string }) {
     stopped.current = false;
     const tick = async () => {
       if (stopped.current) return;
-      const status = await getOrderPaymentStatusForConfirmation(orderNumber);
-      if ("paymentVerified" in status && status.paymentVerified) {
+      const status = await getOrderPaymentStatusForConfirmation();
+      if ("paymentVerified" in status && status.paymentVerified && status.orderNumber) {
         stopped.current = true;
-        router.refresh();
+        router.replace(
+          `/order/confirmed/${encodeURIComponent(status.orderNumber)}`,
+        );
       }
     };
     void tick();
@@ -25,7 +27,7 @@ export function AsaasPaymentWait({ orderNumber }: { orderNumber: string }) {
       stopped.current = true;
       window.clearInterval(id);
     };
-  }, [orderNumber, router]);
+  }, [router]);
 
   return null;
 }

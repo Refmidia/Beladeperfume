@@ -335,12 +335,17 @@ export const copy = {
     mobile: "Celular (WhatsApp)",
     phonePlaceholder: "(11) 99999-9999",
     email: "E-mail",
-    delivery: "Entrega",
-    street: "Endereço",
+    delivery: "Endereço de entrega",
+    street: "Rua e número",
     area: "Bairro",
     city: "Cidade",
-    zone: "Região de entrega",
+    postalCode: "CEP",
+    postalCodePlaceholder: "00000-000",
+    shippingEstimate: (label: string, fee: string, eta: string) =>
+      `Frete: ${label} · ${fee} · entrega em ${eta}`,
     payment: "Pagamento",
+    paymentOnlineHintPix: "QR Code na próxima tela. Aprovação na hora.",
+    paymentOnlineHintCard: "Cartão de crédito ou débito na próxima etapa.",
     paymentLegend: "Forma de pagamento",
     noPayment: "Nenhuma forma de pagamento disponível. Ligue para a loja.",
     txnId: "ID da transação PIX",
@@ -358,7 +363,7 @@ export const copy = {
     asaasCardTitle: "Pagamento com cartão",
     asaasCardTotal: "Valor no cartão:",
     asaasCardHint:
-      "Você será direcionado à página segura do Asaas para informar cartão de crédito ou débito. Não armazenamos dados do cartão.",
+      "Na próxima etapa, informe cartão de crédito ou débito em ambiente protegido. A Bela de Perfume não armazena dados do cartão.",
     asaasCardPayButton: "Pagar com cartão agora",
     asaasCardPaid:
       "Pagamento recebido. Nossa equipe ainda confirma o pedido por telefone antes do envio.",
@@ -373,9 +378,9 @@ export const copy = {
     deliveryFee: "Frete",
     freeDeliverySaving: "Desconto frete grátis",
     total: "Total",
-    placeOrder: "Confirmar pedido",
-    placing: "Enviando pedido…",
-    placingShort: "Enviando…",
+    placeOrder: "Finalizar e pagar",
+    placing: "Processando…",
+    placingShort: "Processando…",
     checkFields: "Revise os campos destacados.",
     orderFailed: "Não foi possível concluir o pedido.",
     connectionLost:
@@ -556,9 +561,14 @@ export const copy = {
     lookupHint: "Use o número do pedido e o celular da compra para ver os detalhes.",
     payEyebrow: "Quase lá",
     payTitle: "Finalize o pagamento",
-    payOrderRef: (n: string) => `Pedido ${n} — conclua o PIX ou cartão abaixo para registrar a compra.`,
+    payOrderRef:
+      "Conclua o PIX ou cartão abaixo para registrar a compra. O número do pedido só aparece depois que o pagamento for confirmado.",
     payAfterHint:
-      "Depois que o pagamento for confirmado, você verá o resumo do pedido e poderá rastrear a entrega.",
+      "Quando o pagamento for confirmado, anote ou tire print do número do pedido — você vai precisar dele para rastrear a entrega.",
+    paidEyebrow: "Pagamento confirmado",
+    paidTitle: "Seu número de pedido",
+    saveOrderNumberHint:
+      "Anote ou tire um print deste código. Use-o com o mesmo celular da compra em Rastrear pedido.",
     continueShopping: "Continuar comprando",
     asaasNotConfigured:
       "Pagamento online temporariamente indisponível. Ligue para a loja para concluir o pedido.",

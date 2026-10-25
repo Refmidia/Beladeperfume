@@ -23,7 +23,9 @@ import { haptic } from "./device";
 const tel = `tel:${config.contact.phone.replace(/\s/g, "")}`;
 const paymentNames = Object.entries(config.checkout.paymentMethods)
   .filter(([, method]) => method.enabled)
-  .map(([key, method]) => ("label" in method ? method.label : key === "bkash" ? "PIX" : "Nagad"));
+  .map(([key, method]) =>
+    key === "bkash" ? "PIX" : key === "nagad" ? "Cartão" : "label" in method ? method.label : key,
+  );
 
 /** Native share sheet where the browser has one (phones); renders nothing elsewhere. */
 function ShareButton({ name }: { name: string }) {
@@ -288,7 +290,9 @@ export function ProductBuyBox({
             {config.checkout.freeDeliveryOver !== null && (
               <small>{copy.product.freeDeliveryOver(formatMoney(config.checkout.freeDeliveryOver))}</small>
             )}
-            {p.groundShippingOnly && <small>{copy.product.groundOnly}</small>}
+            {config.features.groundShippingOnly && p.groundShippingOnly && (
+              <small>{copy.product.groundOnly}</small>
+            )}
           </div>
         </div>
         <div className="buy-panel-row">

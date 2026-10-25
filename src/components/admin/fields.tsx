@@ -129,7 +129,7 @@ export function MarkdownField({
     </div>
   );
 }
-export async function uploadImage(file: File) {
+async function fileToWebpBlob(file: File) {
   if (
     !/^image\/(jpeg|png|webp)$/.test(file.type) ||
     file.size > 5 * 1024 * 1024
@@ -142,13 +142,29 @@ export async function uploadImage(file: File) {
   canvas.height = Math.round(bitmap.height * scale);
   canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
   bitmap.close();
-  const blob = await new Promise<Blob>((resolve, reject) =>
+  return new Promise<Blob>((resolve, reject) =>
     canvas.toBlob(
       (b) => (b ? resolve(b) : reject(new Error("Cannot convert image."))),
       "image/webp",
       0.85,
     ),
   );
+}
+
+/** Envia para /catalog/… (nuvem ou public/catalog no PC). Ideal no celular com R2/S3. */
+export async function uploadCatalogImage(file: File, catalogSlug: string) {
+  const blob = await fileToWebpBlob(file);
+  const form = new FormData();
+  form.append("file", blob, "image.webp");
+  form.append("catalogSlug", catalogSlug);
+  const response = await fetch("/api/uploads", { method: "POST", body: form });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error ?? "Falha ao enviar a foto.");
+  return data.url as string;
+}
+
+export async function uploadImage(file: File) {
+  const blob = await fileToWebpBlob(file);
   const form = new FormData();
   form.append("file", blob, "image.webp");
   const response = await fetch("/api/uploads", { method: "POST", body: form });

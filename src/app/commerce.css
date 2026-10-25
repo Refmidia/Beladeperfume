@@ -284,7 +284,8 @@
 .payment-methods label {
   display: flex;
   align-items: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 8px 12px;
   min-height: 52px;
   padding: 12px 16px;
   border: 1px solid var(--border);
@@ -302,6 +303,36 @@
   accent-color: var(--primary);
   width: 18px;
   height: 18px;
+}
+.payment-methods__label {
+  font-weight: 600;
+  flex: 1;
+}
+.payment-methods__badge {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--sf-ink, inherit);
+}
+.payment-hint {
+  margin: 8px 0 0;
+  font-size: 13px;
+}
+.checkout-shipping-estimate {
+  margin: 4px 0 0;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--primary) 6%, transparent);
+  border: 1px solid var(--border);
+}
+.checkout-shipping-free {
+  color: var(--store-deal, var(--primary));
+  font-weight: 600;
 }
 .payment-instructions {
   display: grid;
@@ -413,6 +444,28 @@
   background: var(--sf-surface);
   text-align: center;
 }
+.bela-payment-brand {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  margin-bottom: 4px;
+}
+.bela-payment-brand__logo {
+  width: auto;
+  height: 40px;
+  object-fit: contain;
+}
+.bela-payment-brand__name {
+  font-size: 1.1rem;
+}
+.bela-payment-brand__tagline {
+  margin: 0;
+  font-size: 12px;
+  max-width: 28rem;
+}
+.bela-payment-panel {
+  box-shadow: 0 1px 0 rgb(0 0 0 / 4%);
+}
 .asaas-pix-panel h2 {
   margin: 0;
   font-size: 1.15rem;
@@ -452,6 +505,34 @@
 
 .confirmation-page {
   max-width: 760px;
+}
+.order-number-reveal {
+  display: grid;
+  gap: 10px;
+  margin-block: 8px 20px;
+  padding: 20px 16px;
+  border: 2px solid var(--store-primary, var(--sf-accent));
+  border-radius: var(--sf-radius-lg);
+  background: var(--sf-surface);
+  text-align: center;
+}
+.order-number-reveal h1 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.order-number-reveal__hint {
+  margin: 0;
+  font-size: 14px;
+  color: var(--sf-muted);
+  line-height: 1.45;
+}
+.order-number-reveal__code {
+  margin: 4px 0 0;
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
 }
 .confirmation-page > .success-mark {
   display: block;

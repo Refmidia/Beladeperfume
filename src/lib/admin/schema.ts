@@ -25,7 +25,7 @@ export const safeUrl = z
   .max(2000)
   .refine(
     (s) => !s || /^(https?:\/\/[^\s]+|\/(?!\/)[^\s\\]*)$/.test(s),
-    "Use an http(s) URL or a local path.",
+    "Use https://… ou um caminho começando com / (ex.: /catalog/foto.webp).",
   );
 const integer = z.number().int().min(0).max(2147483647);
 const optionalText = text.nullable();

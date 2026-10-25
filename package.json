@@ -21,6 +21,7 @@
     "db:patch-brand-types": "node --import tsx scripts/patch-brand-types.ts",
     "asaas:import-from-auto-engaja": "node scripts/import-asaas-from-auto-engaja.mjs",
     "asaas:sync-vercel": "node scripts/sync-asaas-env-vercel.mjs",
+    "r2:sync-vercel": "node scripts/sync-r2-env-vercel.mjs",
     "asaas:register-webhook": "node scripts/register-asaas-webhook.mjs",
     "images:publish-local": "node --import tsx scripts/publish-local-uploads.ts",
     "images:import": "node --import tsx scripts/import-product-images.ts",

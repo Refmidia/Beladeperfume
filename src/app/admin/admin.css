@@ -2854,6 +2854,16 @@ a.admin-kpi:hover .admin-kpi-arrow {
   padding: 16px 24px 22px;
   border-top: 1px solid var(--line);
 }
+.admin-catalog-link-preview {
+  position: relative;
+  width: min(100%, 280px);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--surface-2, #f4f4f5);
+}
 
 /* ---------- Product editor ---------- */
 .admin-editor-grid {

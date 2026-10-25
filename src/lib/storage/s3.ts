@@ -10,12 +10,22 @@ function client() {
     retries: 2,
   });
 }
-function url(key: string) {
+function assertObjectKey(key: string) {
+  if (/^catalog\/[a-z0-9-]+\.webp$/.test(key)) return;
   validateObjectKey(key);
-  return `${env.S3_ENDPOINT!.replace(/\/$/, "")}/${encodeURIComponent(env.S3_BUCKET!)}/${key}`;
+}
+
+function url(key: string) {
+  assertObjectKey(key);
+  const encoded = key
+    .split("/")
+    .map((part) => encodeURIComponent(part))
+    .join("/");
+  return `${env.S3_ENDPOINT!.replace(/\/$/, "")}/${encodeURIComponent(env.S3_BUCKET!)}/${encoded}`;
 }
 export const s3StorageAdapter = {
   async putObject(buffer: Uint8Array, key: string) {
+    assertObjectKey(key);
     const response = await client().fetch(url(key), {
       method: "PUT",
       body: new Uint8Array(buffer),

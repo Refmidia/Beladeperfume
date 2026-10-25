@@ -1,15 +1,13 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { orders } from "@/db/schema";
 import { getPublicOrder } from "@/lib/orders/public-order";
 import { OrderSummary } from "@/components/storefront/order-tracking";
-import { AsaasCardPanel } from "@/components/storefront/asaas-card";
-import { AsaasPixPanel } from "@/components/storefront/asaas-pix";
-import { AsaasPaymentWait } from "@/components/storefront/asaas-payment-wait";
 import { PaymentInstructions } from "@/components/storefront/checkout";
-import { asaasEnabled, isAsaasOnlineMethod, orderAwaitingAsaasPayment } from "@/lib/payments/adapter";
+import { isAsaasOnlineMethod, orderAwaitingAsaasPayment } from "@/lib/payments/adapter";
 import { SuccessMark } from "@/components/storefront/ui";
 import { copy } from "@/lib/storefront/copy";
 import { storeConfig as config } from "../../../../../../store.config";
@@ -18,16 +16,6 @@ export const metadata = {
   title: copy.metaPages.orderReceived,
   robots: { index: false, follow: false },
 };
-
-function AsaasPaymentSection({ record }: { record: typeof orders.$inferSelect }) {
-  if (record.paymentMethod === "bkash") {
-    return <AsaasPixPanel order={record} />;
-  }
-  if (record.paymentMethod === "nagad") {
-    return <AsaasCardPanel order={record} />;
-  }
-  return null;
-}
 
 export default async function Page({
   params,
@@ -61,49 +49,26 @@ export default async function Page({
       : null;
 
   if (awaitingPayment) {
-    const panel =
-      asaasEnabled() && record.paymentTxnId ? (
-        <AsaasPaymentSection record={record} />
-      ) : asaasOnline && !asaasEnabled() ? (
-        <p className="confirmation-note">{copy.orderConfirm.asaasNotConfigured}</p>
-      ) : asaasOnline && !record.paymentTxnId ? (
-        <p className="confirmation-note">{copy.orderConfirm.asaasChargeMissing}</p>
-      ) : (
-        <AsaasPaymentSection record={record} />
-      );
-
-    return (
-      <div className="store-width commerce-page confirmation-page confirmation-page--pay">
-        <p className="muted">{copy.orderConfirm.payEyebrow}</p>
-        <h1>{copy.orderConfirm.payTitle}</h1>
-        <p className="confirmation-note">
-          {copy.orderConfirm.payOrderRef(record.orderNumber)}
-        </p>
-        {panel}
-        {!record.paymentVerified && asaasEnabled() && record.paymentTxnId && (
-          <AsaasPaymentWait orderNumber={record.orderNumber} />
-        )}
-        <p className="muted checkout-privacy">{copy.orderConfirm.payAfterHint}</p>
-        <div className="confirmation-links">
-          <Link className="text-link" href="/products">
-            {copy.orderConfirm.continueShopping}
-          </Link>
-          <a
-            className="text-link"
-            href={`tel:${config.contact.phone.replace(/\s/g, "")}`}
-          >
-            {copy.orderConfirm.callStore(config.contact.phone)}
-          </a>
-        </div>
-      </div>
-    );
+    redirect("/order/pay");
   }
+
+  const showOrderNumberReveal = asaasOnline && record.paymentVerified;
 
   return (
     <div className="store-width commerce-page confirmation-page">
       <SuccessMark size={44} />
-      <p className="muted">{copy.orderConfirm.received}</p>
-      <h1>{record.orderNumber}</h1>
+      <p className="muted">
+        {showOrderNumberReveal ? copy.orderConfirm.paidEyebrow : copy.orderConfirm.received}
+      </p>
+      {showOrderNumberReveal ? (
+        <section className="order-number-reveal" aria-labelledby="order-number-heading">
+          <h1 id="order-number-heading">{copy.orderConfirm.paidTitle}</h1>
+          <p className="order-number-reveal__hint">{copy.orderConfirm.saveOrderNumberHint}</p>
+          <p className="order-number-reveal__code">{record.orderNumber}</p>
+        </section>
+      ) : (
+        <h1>{record.orderNumber}</h1>
+      )}
       <p className="confirmation-note">{config.checkout.confirmationNote}</p>
       <ol className="next-steps">
         <li>

@@ -34,7 +34,7 @@ import { copy } from "@/lib/storefront/copy";
 function paymentLabel(key: string, method: (typeof config.checkout.paymentMethods)[keyof typeof config.checkout.paymentMethods]) {
   if (key === "cod" && "label" in method) return method.label;
   if (key === "bkash") return "PIX";
-  return "Nagad";
+  return "Cartão";
 }
 export const whatsappHref = config.contact.whatsapp
   ? `https://wa.me/${config.contact.whatsapp.replace(/\D/g, "")}`

@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { adminSession } from "@/lib/admin/session";
 import { getStorage } from "@/lib/storage";
+import { publishCatalogWebp } from "@/lib/storage/catalog";
 import { MAX_UPLOAD_BYTES, validateImage } from "@/lib/storage/image";
 import { takeRateLimit } from "@/lib/rate-limit";
 import { env } from "@/lib/env";
@@ -57,16 +58,31 @@ export async function POST(request: Request) {
     );
     // Demo visitors (DEMO_MODE) upload into their own sandbox, never to storage.
     if (env.DEMO_MODE && session.user.role === "demo") return Response.json(await putSandboxUpload(bytes));
+    const catalogSlug = data.get("catalogSlug");
+    if (typeof catalogSlug === "string" && catalogSlug.trim()) {
+      const url = await publishCatalogWebp(bytes, catalogSlug.trim());
+      return Response.json({ url, catalog: true });
+    }
     const key = `${randomUUID()}.webp`;
     const url = await getStorage().putObject(bytes, key);
     return Response.json({ url, key });
   } catch (error) {
     if (error instanceof SandboxUploadError) return Response.json({ error: error.message }, { status: 400 });
+    const message = error instanceof Error ? error.message : "";
+    if (message === "STORAGE_CLOUD") {
+      return Response.json(
+        {
+          error:
+            "Para enviar foto pelo celular, configure armazenamento na nuvem (Cloudflare R2 ou Supabase — grátis). Enquanto isso, cole um link https:// público da imagem.",
+        },
+        { status: 503 },
+      );
+    }
     const onVercel = Boolean(process.env.VERCEL);
     return Response.json(
       {
         error: onVercel
-          ? "Envio de arquivo indisponível na Vercel com armazenamento local. Use Imagens → Adicionar por URL (ex.: /catalog/foto.webp após npm run images:import) ou configure bucket S3/R2 (docs/deploy/storage.md)."
+          ? "Não foi possível enviar a foto. Configure bucket S3/R2 (docs/deploy/storage.md) ou cole um link https:// da imagem."
           : "Falha no envio. Use JPEG, PNG ou WebP com até 5 MB ou confira STORAGE_ADAPTER no .env.",
       },
       { status: 400 },

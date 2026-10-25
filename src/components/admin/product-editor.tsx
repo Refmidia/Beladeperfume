@@ -28,11 +28,26 @@ import {
   MoneyReaisField,
   Result,
   SwitchField,
-  uploadImage,
+  uploadCatalogImage,
   useUnsavedGuard,
 } from "./fields";
+import {
+  CatalogLinkDialog,
+  catalogPathFromFileName,
+  type PendingCatalogLink,
+} from "./catalog-link-dialog";
 import { VariantVolumeField } from "./variant-volume-field";
 import { Combobox } from "./combobox";
+
+/** Caminhos relativos (../foto.webp) não funcionam; imagens publicadas ficam em /catalog/. */
+function normalizeProductImageUrl(raw: string) {
+  const url = raw.trim();
+  if (!url) return url;
+  if (/^https?:\/\//i.test(url) || url.startsWith("/")) return url;
+  if (url.startsWith("../")) return `/catalog/${url.slice(3).replace(/^\/+/, "")}`;
+  if (url.startsWith("catalog/")) return `/${url}`;
+  return url;
+}
 import { InlineCreate, type Choices } from "./entity-editor";
 import { PageHeader, Panel } from "./ui";
 import { adminCopy as pe } from "@/lib/admin/copy";
@@ -217,21 +232,85 @@ export function ProductEditor({
     return () => window.removeEventListener("keydown", onKey);
   }, []);
   const [drag, setDrag] = useState<number>();
-  const [uploading, setUploading] = useState(0);
+  const [pendingCatalogLink, setPendingCatalogLink] = useState<PendingCatalogLink | null>(null);
+  const fileQueue = useRef<File[]>([]);
   const uploader = useRef<HTMLInputElement>(null);
-  async function addFiles(files: FileList | File[]) {
-    const list = [...files];
-    setUploading((n) => n + list.length);
-    for (const file of list) {
-      try {
-        const url = await uploadImage(file);
-        setData((d) => ({ ...d, images: [...d.images, { url, alt: d.name || pe.productEditor.productImageAlt }] }));
-      } catch (e) {
-        toast.error((e as Error).message);
-      } finally {
-        setUploading((n) => n - 1);
+
+  function catalogSlugFromFile(file: File) {
+    const fallback = slug(data.slug || data.name) || "imagem";
+    return catalogPathFromFileName(file.name, fallback)
+      .replace(/^\/catalog\//, "")
+      .replace(/\.webp$/i, "");
+  }
+
+  function openCatalogFallback(file: File, uploadError?: string) {
+    const fallback = slug(data.slug || data.name) || "imagem";
+    const previewUrl = URL.createObjectURL(file);
+    setPendingCatalogLink({
+      file,
+      previewUrl,
+      url: catalogPathFromFileName(file.name, fallback),
+      alt: data.name || pe.productEditor.productImageAlt,
+      fileName: file.name,
+      uploadError,
+    });
+  }
+
+  function openNextCatalogFile() {
+    const file = fileQueue.current.shift();
+    if (!file) return;
+    void uploadCatalogFromFile(file);
+  }
+
+  async function uploadCatalogFromFile(file: File) {
+    const slugPart = catalogSlugFromFile(file);
+    const toastId = `catalog-${file.name}`;
+    toast.loading(pe.productEditor.catalogUploading, { id: toastId });
+    try {
+      const url = await uploadCatalogImage(file, slugPart);
+      toast.success(pe.productEditor.catalogUploadDone, { id: toastId });
+      confirmCatalogLink(url, data.name || pe.productEditor.productImageAlt);
+    } catch (e) {
+      toast.dismiss(toastId);
+      openCatalogFallback(file, (e as Error).message);
+    }
+  }
+
+  function queueCatalogFiles(files: FileList | File[]) {
+    for (const file of [...files]) {
+      if (!/^image\/(jpeg|png|webp)$/i.test(file.type)) {
+        toast.error("Use JPEG, PNG ou WebP.");
+        continue;
+      }
+      if (file.size > 15 * 1024 * 1024) {
+        toast.error("Imagem muito grande (máx. 15 MB).");
+        continue;
+      }
+      if (!pendingCatalogLink && fileQueue.current.length === 0) {
+        void uploadCatalogFromFile(file);
+      } else {
+        fileQueue.current.push(file);
       }
     }
+  }
+
+  function confirmCatalogLink(url: string, alt: string) {
+    const normalized = normalizeProductImageUrl(url);
+    setData((d) => ({
+      ...d,
+      images: [...d.images, { url: normalized, alt: alt || d.name || pe.productEditor.productImageAlt }],
+    }));
+    toast.success(pe.productEditor.catalogLinkConfirm);
+    if (pendingCatalogLink) URL.revokeObjectURL(pendingCatalogLink.previewUrl);
+    setPendingCatalogLink(null);
+    const next = fileQueue.current.shift();
+    if (next) void uploadCatalogFromFile(next);
+  }
+
+  function cancelCatalogLink() {
+    if (pendingCatalogLink) URL.revokeObjectURL(pendingCatalogLink.previewUrl);
+    setPendingCatalogLink(null);
+    fileQueue.current = [];
   }
   const brand = choices.brands.find((b) => b.id === data.brandId);
   const activeVariants = data.variants.filter((v) => v.isActive);
@@ -577,7 +656,7 @@ export function ProductEditor({
                 onDrop={(e) => {
                   if (drag === undefined && e.dataTransfer.files.length) {
                     e.preventDefault();
-                    void addFiles(e.dataTransfer.files);
+                    void queueCatalogFiles(e.dataTransfer.files);
                   }
                 }}
               >
@@ -618,7 +697,22 @@ export function ProductEditor({
                           value={image.url}
                           aria-label={pe.productEditor.imageUrl(i + 1)}
                           placeholder="/catalog/nome.webp ou https://…"
-                          onChange={(e) => set("images", data.images.map((row, n) => (n === i ? { ...row, url: e.target.value } : row)))}
+                          onChange={(e) =>
+                            set(
+                              "images",
+                              data.images.map((row, n) =>
+                                n === i ? { ...row, url: normalizeProductImageUrl(e.target.value) } : row,
+                              ),
+                            )
+                          }
+                          onBlur={(e) =>
+                            set(
+                              "images",
+                              data.images.map((row, n) =>
+                                n === i ? { ...row, url: normalizeProductImageUrl(e.target.value) } : row,
+                              ),
+                            )
+                          }
                         />
                       )}
                       <input
@@ -642,11 +736,11 @@ export function ProductEditor({
                     </figcaption>
                   </figure>
                 ))}
-                <button type="button" className="admin-gallery-add" onClick={() => uploader.current?.click()} disabled={uploading > 0}>
+                <button type="button" className="admin-gallery-add" onClick={() => uploader.current?.click()}>
                   <span className="admin-icon-tile">
-                    {uploading ? <LoaderCircle size={18} className="admin-spin" /> : <ImagePlus size={18} />}
+                    <ImagePlus size={18} />
                   </span>
-                  <strong>{uploading ? pe.productEditor.uploading(uploading) : pe.productEditor.addImages}</strong>
+                  <strong>{pe.productEditor.addImages}</strong>
                   <small>{pe.productEditor.addImagesHint}</small>
                 </button>
               </div>
@@ -787,7 +881,14 @@ export function ProductEditor({
                 <SwitchField label={pe.productEditor.visibleLabel} description={pe.productEditor.visibleDesc} checked={data.isActive} onChange={(v) => set("isActive", v)} />
               )}
               <SwitchField label={pe.productEditor.featuredLabel} description={pe.productEditor.featuredDesc} checked={data.isFeatured} onChange={(v) => set("isFeatured", v)} />
-              <SwitchField label={pe.productEditor.groundOnlyLabel} description={pe.productEditor.groundOnlyDesc} checked={data.groundShippingOnly} onChange={(v) => set("groundShippingOnly", v)} />
+              {storeConfig.features.groundShippingOnly && (
+                <SwitchField
+                  label={pe.productEditor.groundOnlyLabel}
+                  description={pe.productEditor.groundOnlyDesc}
+                  checked={data.groundShippingOnly}
+                  onChange={(v) => set("groundShippingOnly", v)}
+                />
+              )}
             </div>
           </Panel>
 
@@ -816,9 +917,14 @@ export function ProductEditor({
         multiple
         accept="image/jpeg,image/png,image/webp"
         onChange={(e) => {
-          if (e.target.files) void addFiles(e.target.files);
+          if (e.target.files) void queueCatalogFiles(e.target.files);
           e.target.value = "";
         }}
+      />
+      <CatalogLinkDialog
+        pending={pendingCatalogLink}
+        onConfirm={confirmCatalogLink}
+        onCancel={cancelCatalogLink}
       />
       <div className="admin-savebar" data-visible={dirty || undefined}>
         <span>

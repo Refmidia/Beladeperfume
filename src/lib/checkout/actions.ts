@@ -39,7 +39,7 @@ export async function placeOrder(input: unknown) {
         sameSite: "lax",
         secure: process.env.NODE_ENV === "production",
         maxAge: 3600,
-        path: "/order/confirmed",
+        path: "/order",
       });
     }
     const asaasMethod = parsed.data.paymentMethod;
@@ -103,7 +103,7 @@ export async function placeOrder(input: unknown) {
   }
 }
 /** Cookie da confirmação: polling leve até o webhook marcar pagamento. */
-export async function getOrderPaymentStatusForConfirmation(orderNumber: string) {
+export async function getOrderPaymentStatusForConfirmation() {
   if (!(await takeRateLimit("checkout-ip", clientIp(await headers()), 60)))
     return { error: "Muitas tentativas. Aguarde um momento." as const };
   const token = (await cookies()).get("attar-order")?.value;
@@ -112,14 +112,16 @@ export async function getOrderPaymentStatusForConfirmation(orderNumber: string) 
     .select({
       paymentVerified: orders.paymentVerified,
       paymentTxnId: orders.paymentTxnId,
+      orderNumber: orders.orderNumber,
     })
     .from(orders)
-    .where(and(eq(orders.id, token), eq(orders.orderNumber, orderNumber)))
+    .where(eq(orders.id, token))
     .limit(1);
   if (!record) return { error: "Pedido não encontrado." as const };
   return {
     paymentVerified: record.paymentVerified,
     hasCharge: Boolean(record.paymentTxnId),
+    orderNumber: record.orderNumber,
   };
 }
 

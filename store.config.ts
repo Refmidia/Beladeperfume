@@ -117,6 +117,8 @@ export const storeConfigSchema = () => z.object({
     recentlyViewed: z.boolean(),
     /** Show strikethrough MSRP + "% off" badges (the Jomashop signature). */
     dealBadges: z.boolean(),
+    /** Admin: opção “só frete terrestre” no produto (kits grandes, etc.). */
+    groundShippingOnly: z.boolean(),
   }),
 
   catalog: z.object({
@@ -205,7 +207,7 @@ const config: StoreConfig = {
     freeDeliveryOver: 35000,
     paymentMethods: {
       cod: {
-        enabled: true,
+        enabled: false,
         label: "Pagamento na entrega",
         instructions:
           "Pague na entrega (dinheiro ou cartão, conforme combinado por telefone). Confirmamos tudo com você antes de enviar.",
@@ -214,19 +216,17 @@ const config: StoreConfig = {
         enabled: true,
         number: "contato@beladeperfume.com.br",
         accountType: "personal",
-        instructions:
-          "Após confirmar o pedido, você verá o QR Code PIX gerado automaticamente (Asaas). Nossa equipe liga para confirmar o envio.",
+        instructions: "",
       },
       nagad: {
         enabled: true,
         number: null,
         accountType: "personal",
-        instructions:
-          "Após confirmar o pedido, use o botão para pagar na página segura do Asaas (crédito ou débito). Valor já é o preço cartão do site.",
+        instructions: "",
       },
     },
     confirmationNote:
-      "Depois do pedido, nossa equipe liga em algumas horas para confirmar fragrâncias, endereço e pagamento. Nada é enviado sem sua confirmação.",
+      "Frete grátis acima de R$ 350. Após o pagamento, você recebe o número do pedido para rastrear a entrega.",
     paymentProvider: "asaas",
   },
 
@@ -236,6 +236,7 @@ const config: StoreConfig = {
     coupons: true,
     recentlyViewed: true,
     dealBadges: true,
+    groundShippingOnly: false,
   },
 
   catalog: {

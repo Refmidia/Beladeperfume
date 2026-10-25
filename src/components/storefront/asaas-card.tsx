@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BelaPaymentBrand } from "@/components/storefront/bela-payment-brand";
 import { copy } from "@/lib/storefront/copy";
 import { asaasEnabled } from "@/lib/payments/adapter";
 import { fetchAsaasPayment, orderTotalReais } from "@/lib/payments/asaas/pix";
@@ -29,7 +30,8 @@ export async function AsaasCardPanel({ order }: { order: typeof orders.$inferSel
   }
 
   return (
-    <section className="asaas-card-panel">
+    <section className="asaas-card-panel bela-payment-panel">
+      <BelaPaymentBrand />
       <h2>{copy.checkout.asaasCardTitle}</h2>
       <p className="muted">
         {copy.checkout.asaasCardTotal} <strong>{orderTotalReais(order)}</strong>

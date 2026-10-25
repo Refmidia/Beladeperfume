@@ -1,3 +1,4 @@
+import { BelaPaymentBrand } from "@/components/storefront/bela-payment-brand";
 import { copy } from "@/lib/storefront/copy";
 import { asaasEnabled } from "@/lib/payments/adapter";
 import { fetchPixQrCode, orderTotalReais } from "@/lib/payments/asaas/pix";
@@ -29,7 +30,8 @@ export async function AsaasPixPanel({ order }: { order: typeof orders.$inferSele
   if (!qr) return null;
 
   return (
-    <section className="asaas-pix-panel">
+    <section className="asaas-pix-panel bela-payment-panel">
+      <BelaPaymentBrand />
       <h2>{copy.checkout.asaasPixTitle}</h2>
       <p className="muted">
         {copy.checkout.asaasPixTotal} <strong>{orderTotalReais(order)}</strong>

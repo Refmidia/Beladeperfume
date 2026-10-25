@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "./cart-provider";
 import { CartFeedback, CartLoading, CouponForm, EmptyCart } from "./cart";
 import { checkoutSchema, deliveryTotals } from "@/lib/checkout/schema";
+import { deliveryZoneById, inferDeliveryZoneId } from "@/lib/checkout/delivery-zone";
 import { placeOrder } from "@/lib/checkout/actions";
 import { formatMoney } from "@/lib/money";
 import { storeConfig as config } from "../../../store.config";
@@ -20,6 +21,7 @@ export function PaymentInstructions({ method }: { method: Method }) {
   const payment = config.checkout.paymentMethods[method];
   if (!payment.enabled) return null;
   if (config.checkout.paymentProvider === "asaas" && method !== "cod") {
+    if (!payment.instructions?.trim()) return null;
     return (
       <div className="payment-instructions">
         <p>{payment.instructions}</p>
@@ -42,10 +44,22 @@ export function CheckoutPage() {
   const cart = useCart(),
     router = useRouter();
   const [zoneId, setZoneId] = useState(config.checkout.deliveryZones[0].id);
+  const [postalCode, setPostalCode] = useState("");
   const enabled = (
     Object.keys(config.checkout.paymentMethods) as Method[]
-  ).filter((key) => config.checkout.paymentMethods[key].enabled);
-  const [method, setMethod] = useState<Method>(enabled[0] ?? "cod");
+  )
+    .filter((key) => config.checkout.paymentMethods[key].enabled)
+    .sort((a, b) => {
+      const order: Method[] = ["bkash", "nagad", "cod"];
+      return order.indexOf(a) - order.indexOf(b);
+    });
+  const [method, setMethod] = useState<Method>(
+    enabled.includes("bkash") ? "bkash" : (enabled[0] ?? "bkash"),
+  );
+  function refreshDeliveryZone(form: HTMLFormElement) {
+    const city = (form.elements.namedItem("city") as HTMLInputElement | null)?.value ?? "";
+    setZoneId(inferDeliveryZoneId(city, postalCode));
+  }
   useEffect(() => {
     cart.setCheckoutPayment(method);
   }, [method]);
@@ -57,6 +71,7 @@ export function CheckoutPage() {
   const submitting = useRef(false),
     requestId = useRef<string | null>(null);
   const totals = deliveryTotals(cart.subtotal, zoneId, cart.discount);
+  const deliveryZone = deliveryZoneById(zoneId);
   const asaasOnline =
     config.checkout.paymentProvider === "asaas" && method !== "cod";
   const submitDisabled = pending || cart.busy || Boolean(cart.error) || !enabled.length;
@@ -98,8 +113,11 @@ export function CheckoutPage() {
       const result = await placeOrder(input);
       if (result.orderNumber && !result.error) {
         cart.clear();
+        const payOnline = method === "bkash" || method === "nagad";
         router.replace(
-          `/order/confirmed/${encodeURIComponent(result.orderNumber)}`,
+          payOnline
+            ? "/order/pay"
+            : `/order/confirmed/${encodeURIComponent(result.orderNumber)}`,
         );
         return;
       }
@@ -174,6 +192,12 @@ export function CheckoutPage() {
       <form
         noValidate
         onSubmit={submit}
+        onBlur={(e) => {
+          const t = e.target;
+          if (t instanceof HTMLInputElement && t.name === "city") {
+            refreshDeliveryZone(e.currentTarget);
+          }
+        }}
         className="commerce-grid checkout-form"
         aria-busy={pending}
       >
@@ -211,27 +235,38 @@ export function CheckoutPage() {
               })}
             </div>
             <div className="checkout-field">
-              <label htmlFor="zoneId">{copy.checkout.zone}</label>
-              <select
-                id="zoneId"
-                name="zoneId"
-                value={zoneId}
-                onChange={(e) => setZoneId(e.target.value)}
-              >
-                {config.checkout.deliveryZones.map((zone) => (
-                  <option key={zone.id} value={zone.id}>
-                    {zone.label} · {formatMoney(zone.fee)} · {zone.etaDays}
-                  </option>
-                ))}
-              </select>
+              <label htmlFor="postalCode">{copy.checkout.postalCode}</label>
+              <input
+                id="postalCode"
+                type="text"
+                inputMode="numeric"
+                autoComplete="postal-code"
+                maxLength={9}
+                placeholder={copy.checkout.postalCodePlaceholder}
+                value={postalCode}
+                onChange={(e) => setPostalCode(e.target.value)}
+                onBlur={(e) => refreshDeliveryZone(e.currentTarget.form!)}
+              />
             </div>
+            {deliveryZone && (
+              <p className="checkout-shipping-estimate">
+                {copy.checkout.shippingEstimate(
+                  deliveryZone.label,
+                  formatMoney(totals.fee + totals.saving),
+                  deliveryZone.etaDays,
+                )}
+                {totals.saving > 0 && (
+                  <span className="checkout-shipping-free"> · Frete grátis neste pedido</span>
+                )}
+              </p>
+            )}
           </section>
           <section>
             <h2>{copy.checkout.payment}</h2>
             <fieldset className="payment-methods">
               <legend className="sr-only">{copy.checkout.paymentLegend}</legend>
               {enabled.map((key) => (
-                <label key={key} data-selected={key === method}>
+                <label key={key} data-selected={key === method} data-method={key}>
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -239,13 +274,25 @@ export function CheckoutPage() {
                     checked={key === method}
                     onChange={() => setMethod(key)}
                   />
-                  <span>{paymentLabel(key)}</span>
+                  <span className="payment-methods__label">{paymentLabel(key)}</span>
+                  {key === "bkash" && (
+                    <small className="payment-methods__badge">Instantâneo</small>
+                  )}
+                  {key === "nagad" && (
+                    <small className="payment-methods__badge">Crédito ou débito</small>
+                  )}
                 </label>
               ))}
             </fieldset>
             {!enabled.length ? (
               <p role="alert">
                 {copy.checkout.noPayment}
+              </p>
+            ) : asaasOnline ? (
+              <p className="payment-hint muted">
+                {method === "bkash"
+                  ? copy.checkout.paymentOnlineHintPix
+                  : copy.checkout.paymentOnlineHintCard}
               </p>
             ) : (
               <PaymentInstructions method={method} />
