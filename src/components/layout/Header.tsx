@@ -2,40 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Search,
-  ShoppingBag,
-  Menu,
-  X,
-  Heart,
-  User,
-  ChevronDown,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { siteConfig } from "@/lib/config";
+import { Search, ShoppingBag, Menu, X, Heart, User } from "lucide-react";
 
 const navLinks = [
   { href: "/catalogo", label: "Catálogo" },
-  {
-    href: "/catalogo?categoria=feminino",
-    label: "Feminino",
-    children: [
-      { href: "/catalogo?categoria=feminino&tipo=edp", label: "Eau de Parfum" },
-      { href: "/catalogo?categoria=feminino&tipo=body_splash", label: "Body Splash" },
-    ],
-  },
-  {
-    href: "/catalogo?categoria=masculino",
-    label: "Masculino",
-    children: [
-      { href: "/catalogo?categoria=masculino&tipo=edp", label: "Eau de Parfum" },
-      { href: "/catalogo?categoria=masculino&tipo=parfum", label: "Parfum" },
-    ],
-  },
+  { href: "/catalogo?categoria=feminino", label: "Feminino" },
+  { href: "/catalogo?categoria=masculino", label: "Masculino" },
   { href: "/catalogo?categoria=unissex", label: "Unissex" },
   { href: "/catalogo?disponibilidade=pronta_entrega", label: "Pronta Entrega" },
-  { href: "/marcas", label: "Marcas" },
 ];
 
 export function Header() {
@@ -45,147 +21,46 @@ export function Header() {
 
   return (
     <>
-      {/* Benefits Bar */}
-      <div className="bg-dark text-white text-xs py-2 px-4 text-center">
-        <span className="hidden sm:inline">
-          🚚 Frete Grátis acima de R$ {siteConfig.shipping.freeShippingThreshold} | 💳 Até {siteConfig.shipping.pixDiscount}% OFF no PIX | ✨ Produtos 100% Autênticos
-        </span>
-        <span className="sm:hidden">
-          🚚 Frete Grátis +R${siteConfig.shipping.freeShippingThreshold} | 💳 {siteConfig.shipping.pixDiscount}% OFF PIX
-        </span>
-      </div>
+      <header className="sticky top-0 z-50 bg-bg-cream border-b border-border-cream">
+        <div className="flex items-center justify-between h-14 px-4">
+          {/* Logo */}
+          <Link href="/" className="flex-shrink-0">
+            <Image
+              src="/brand/bela-de-perfume-logo.jpg"
+              alt="Bela de Perfume"
+              width={90}
+              height={36}
+              className="h-9 w-auto mix-blend-multiply"
+              priority
+            />
+          </Link>
 
-      {/* Main Header */}
-      <header className="sticky top-0 z-50 bg-background border-b border-border">
-        {/* Mobile Header */}
-        <div className="lg:hidden">
-          <div className="flex items-center justify-between h-[60px] px-4">
-            {/* Logo */}
-            <Link href="/" className="flex-shrink-0">
-              <h1 className="font-serif text-lg font-semibold tracking-wide text-foreground">
-                <span className="text-gold">Bela</span> de Perfume
-              </h1>
+          {/* Icons */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="p-2.5"
+              aria-label="Buscar"
+            >
+              <Search className="w-5 h-5 stroke-[1.25] text-text-dark" />
+            </button>
+            
+            <Link href="/carrinho" className="p-2.5 relative" aria-label="Carrinho">
+              <ShoppingBag className="w-5 h-5 stroke-[1.25] text-text-dark" />
             </Link>
 
-            {/* Right Icons */}
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setIsSearchOpen(true)}
-                className="p-2 hover:bg-background-secondary rounded-full transition-colors"
-                aria-label="Buscar"
-              >
-                <Search className="w-5 h-5 stroke-[1.5]" />
-              </button>
-              
-              <Link
-                href="/carrinho"
-                className="p-2 hover:bg-background-secondary rounded-full transition-colors relative"
-                aria-label="Carrinho"
-              >
-                <ShoppingBag className="w-5 h-5 stroke-[1.5]" />
-                <span className="absolute -top-0.5 -right-0.5 bg-gold text-white text-[10px] font-semibold w-4 h-4 rounded-full flex items-center justify-center">
-                  0
-                </span>
-              </Link>
-
-              <button
-                onClick={() => setIsMenuOpen(true)}
-                className="p-2 hover:bg-background-secondary rounded-full transition-colors"
-                aria-label="Menu"
-              >
-                <Menu className="w-5 h-5 stroke-[1.5]" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Desktop Header */}
-        <div className="hidden lg:block">
-          <div className="container-shop">
-            <div className="flex items-center justify-between h-[80px]">
-              {/* Logo */}
-              <Link href="/" className="flex-shrink-0">
-                <h1 className="font-serif text-2xl font-semibold tracking-wide text-foreground">
-                  <span className="text-gold">Bela</span> de Perfume
-                </h1>
-              </Link>
-
-              {/* Navigation */}
-              <nav className="flex items-center gap-6">
-                {navLinks.map((link) => (
-                  <div key={link.href} className="relative group">
-                    <Link
-                      href={link.href}
-                      className="flex items-center gap-1 text-sm font-medium text-foreground-muted hover:text-foreground transition-colors py-2"
-                    >
-                      {link.label}
-                      {link.children && (
-                        <ChevronDown className="w-3.5 h-3.5 group-hover:rotate-180 transition-transform" />
-                      )}
-                    </Link>
-                    
-                    {link.children && (
-                      <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                        <div className="bg-card border border-border rounded-lg shadow-lg py-2 min-w-[180px]">
-                          {link.children.map((child) => (
-                            <Link
-                              key={child.href}
-                              href={child.href}
-                              className="block px-4 py-2 text-sm text-foreground-muted hover:text-foreground hover:bg-background-secondary transition-colors"
-                            >
-                              {child.label}
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </nav>
-
-              {/* Right Actions */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setIsSearchOpen(true)}
-                  className="p-2.5 hover:bg-background-secondary rounded-full transition-colors"
-                  aria-label="Buscar"
-                >
-                  <Search className="w-5 h-5 stroke-[1.5]" />
-                </button>
-                
-                <Link
-                  href="/favoritos"
-                  className="p-2.5 hover:bg-background-secondary rounded-full transition-colors"
-                  aria-label="Favoritos"
-                >
-                  <Heart className="w-5 h-5 stroke-[1.5]" />
-                </Link>
-                
-                <Link
-                  href="/conta"
-                  className="p-2.5 hover:bg-background-secondary rounded-full transition-colors"
-                  aria-label="Minha Conta"
-                >
-                  <User className="w-5 h-5 stroke-[1.5]" />
-                </Link>
-                
-                <Link
-                  href="/carrinho"
-                  className="p-2.5 hover:bg-background-secondary rounded-full transition-colors relative"
-                  aria-label="Carrinho"
-                >
-                  <ShoppingBag className="w-5 h-5 stroke-[1.5]" />
-                  <span className="absolute top-0 right-0 bg-gold text-white text-[10px] font-semibold w-4 h-4 rounded-full flex items-center justify-center">
-                    0
-                  </span>
-                </Link>
-              </div>
-            </div>
+            <button
+              onClick={() => setIsMenuOpen(true)}
+              className="p-2.5"
+              aria-label="Menu"
+            >
+              <Menu className="w-5 h-5 stroke-[1.25] text-text-dark" />
+            </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <>
@@ -193,7 +68,7 @@ export function Header() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/40 z-50 lg:hidden"
+              className="fixed inset-0 bg-black/50 z-50"
               onClick={() => setIsMenuOpen(false)}
             />
             <motion.div
@@ -201,63 +76,41 @@ export function Header() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "tween", duration: 0.3 }}
-              className="fixed right-0 top-0 bottom-0 w-[280px] bg-background z-50 lg:hidden shadow-xl"
+              className="fixed right-0 top-0 bottom-0 w-72 bg-bg-cream z-50 shadow-2xl"
             >
-              <div className="flex items-center justify-between p-4 border-b border-border">
-                <span className="font-serif text-lg font-semibold">Menu</span>
-                <button
-                  onClick={() => setIsMenuOpen(false)}
-                  className="p-2 hover:bg-background-secondary rounded-full transition-colors"
-                >
-                  <X className="w-5 h-5" />
+              <div className="flex items-center justify-between p-4 border-b border-border-cream">
+                <Image
+                  src="/brand/bela-de-perfume-logo.jpg"
+                  alt="Bela de Perfume"
+                  width={80}
+                  height={32}
+                  className="h-8 w-auto mix-blend-multiply"
+                />
+                <button onClick={() => setIsMenuOpen(false)} className="p-2">
+                  <X className="w-5 h-5 text-text-dark" />
                 </button>
               </div>
               
               <nav className="p-4">
                 {navLinks.map((link) => (
-                  <div key={link.href} className="py-1">
-                    <Link
-                      href={link.href}
-                      className="block py-3 text-foreground font-medium hover:text-gold transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {link.label}
-                    </Link>
-                    {link.children && (
-                      <div className="pl-4 border-l border-border ml-2">
-                        {link.children.map((child) => (
-                          <Link
-                            key={child.href}
-                            href={child.href}
-                            className="block py-2 text-sm text-foreground-muted hover:text-foreground transition-colors"
-                            onClick={() => setIsMenuOpen(false)}
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="block py-3 text-text-dark font-medium border-b border-border-cream/50 last:border-0"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
                 ))}
               </nav>
 
-              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
-                <div className="flex items-center gap-4">
-                  <Link
-                    href="/favoritos"
-                    className="flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <Heart className="w-4 h-4" />
-                    Favoritos
+              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border-cream">
+                <div className="flex gap-6">
+                  <Link href="/favoritos" className="flex items-center gap-2 text-sm text-text-muted" onClick={() => setIsMenuOpen(false)}>
+                    <Heart className="w-4 h-4" /> Favoritos
                   </Link>
-                  <Link
-                    href="/conta"
-                    className="flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <User className="w-4 h-4" />
-                    Conta
+                  <Link href="/conta" className="flex items-center gap-2 text-sm text-text-muted" onClick={() => setIsMenuOpen(false)}>
+                    <User className="w-4 h-4" /> Conta
                   </Link>
                 </div>
               </div>
@@ -274,35 +127,30 @@ export function Header() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/40 z-50"
+              className="fixed inset-0 bg-black/50 z-50"
               onClick={() => setIsSearchOpen(false)}
             />
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="fixed top-0 left-0 right-0 bg-background z-50 p-4 shadow-lg"
+              className="fixed top-0 left-0 right-0 bg-bg-cream z-50 p-4 shadow-lg"
             >
-              <div className="container-shop">
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-muted" />
-                    <input
-                      type="text"
-                      placeholder="Buscar perfumes, marcas..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-background-secondary border border-border rounded-lg text-foreground placeholder:text-foreground-muted focus:outline-none focus:border-gold transition-colors"
-                      autoFocus
-                    />
-                  </div>
-                  <button
-                    onClick={() => setIsSearchOpen(false)}
-                    className="p-2 hover:bg-background-secondary rounded-full transition-colors"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
+                  <input
+                    type="text"
+                    placeholder="Buscar perfumes..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-bg-cream-light border border-border-cream rounded-lg text-text-dark placeholder:text-text-muted focus:outline-none focus:border-gold"
+                    autoFocus
+                  />
                 </div>
+                <button onClick={() => setIsSearchOpen(false)} className="p-2">
+                  <X className="w-5 h-5 text-text-dark" />
+                </button>
               </div>
             </motion.div>
           </>
