@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { siteConfig } from "@/lib/config";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -19,21 +20,12 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "MAISON OUD | Perfumes Árabes Premium",
-  description:
-    "Descubra fragrâncias exclusivas do Oriente Médio. Perfumes árabes autênticos com frete para todo Brasil.",
-  keywords: [
-    "perfumes árabes",
-    "oud",
-    "fragrâncias orientais",
-    "perfumaria árabe",
-    "lattafa",
-    "armaf",
-    "afnan",
-  ],
+  title: siteConfig.seo.title,
+  description: siteConfig.seo.description,
+  keywords: [...siteConfig.seo.keywords],
   openGraph: {
-    title: "MAISON OUD | Perfumes Árabes Premium",
-    description: "Descubra fragrâncias exclusivas do Oriente Médio",
+    title: siteConfig.seo.title,
+    description: siteConfig.seo.description,
     type: "website",
     locale: "pt_BR",
   },

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
@@ -10,21 +11,21 @@ const categories = [
     title: "Perfumes",
     subtitle: "Femininos",
     href: "/catalogo?categoria=feminino",
-    gradient: "from-rose-100/50 to-background-secondary",
+    image: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=800&q=80",
   },
   {
     id: "masculino",
     title: "Perfumes",
     subtitle: "Masculinos",
     href: "/catalogo?categoria=masculino",
-    gradient: "from-amber-100/50 to-background-secondary",
+    image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=800&q=80",
   },
   {
     id: "unissex",
     title: "Perfumes",
     subtitle: "Unissex",
     href: "/catalogo?categoria=unissex",
-    gradient: "from-stone-200/50 to-background-secondary",
+    image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=800&q=80",
   },
 ];
 
@@ -43,24 +44,30 @@ export function CategoryBanners() {
             >
               <Link
                 href={category.href}
-                className={`group relative block overflow-hidden rounded-2xl bg-gradient-to-br ${category.gradient} p-6 sm:p-8 min-h-[200px] sm:min-h-[240px] border border-border hover:border-gold/50 transition-all duration-300`}
+                className="group relative block overflow-hidden rounded-2xl min-h-[200px] sm:min-h-[280px] border border-border hover:border-gold/50 transition-all duration-300"
               >
-                {/* Decorative element */}
-                <div className="absolute top-4 right-4 w-20 h-20 rounded-full bg-gold/10 group-hover:scale-150 transition-transform duration-500" />
+                {/* Background Image */}
+                <Image
+                  src={category.image}
+                  alt={`${category.title} ${category.subtitle}`}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
                 
-                <div className="relative z-10 h-full flex flex-col justify-between">
-                  <div>
-                    <span className="text-xs text-foreground-muted tracking-widest uppercase">
-                      Coleção
-                    </span>
-                    <h3 className="font-serif text-2xl sm:text-3xl font-semibold text-foreground mt-2">
-                      {category.title}
-                      <br />
-                      <span className="italic text-gold">{category.subtitle}</span>
-                    </h3>
-                  </div>
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-dark/40 to-transparent" />
+                
+                <div className="absolute inset-0 p-6 sm:p-8 flex flex-col justify-end">
+                  <span className="text-xs text-white/70 tracking-widest uppercase">
+                    Coleção
+                  </span>
+                  <h3 className="font-serif text-2xl sm:text-3xl font-semibold text-white mt-1">
+                    {category.title}
+                    <br />
+                    <span className="italic text-gold">{category.subtitle}</span>
+                  </h3>
                   
-                  <div className="flex items-center gap-2 text-sm font-medium text-foreground-muted group-hover:text-gold transition-colors mt-4">
+                  <div className="flex items-center gap-2 text-sm font-medium text-white/80 group-hover:text-gold transition-colors mt-4">
                     VER COLEÇÃO
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>

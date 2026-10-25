@@ -13,6 +13,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { siteConfig } from "@/lib/config";
 
 const navLinks = [
   { href: "/catalogo", label: "Catálogo" },
@@ -47,10 +48,10 @@ export function Header() {
       {/* Benefits Bar */}
       <div className="bg-dark text-white text-xs py-2 px-4 text-center">
         <span className="hidden sm:inline">
-          🚚 Frete Grátis acima de R$ 299 | 💳 Até 25% OFF no PIX | ✨ Produtos 100% Autênticos
+          🚚 Frete Grátis acima de R$ {siteConfig.shipping.freeShippingThreshold} | 💳 Até {siteConfig.shipping.pixDiscount}% OFF no PIX | ✨ Produtos 100% Autênticos
         </span>
         <span className="sm:hidden">
-          🚚 Frete Grátis +R$299 | 💳 25% OFF PIX
+          🚚 Frete Grátis +R${siteConfig.shipping.freeShippingThreshold} | 💳 {siteConfig.shipping.pixDiscount}% OFF PIX
         </span>
       </div>
 
@@ -61,8 +62,8 @@ export function Header() {
           <div className="flex items-center justify-between h-[60px] px-4">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
-              <h1 className="font-serif text-xl font-semibold tracking-wide text-foreground">
-                MAISON <span className="text-gold">OUD</span>
+              <h1 className="font-serif text-lg font-semibold tracking-wide text-foreground">
+                <span className="text-gold">Bela</span> de Perfume
               </h1>
             </Link>
 
@@ -105,7 +106,7 @@ export function Header() {
               {/* Logo */}
               <Link href="/" className="flex-shrink-0">
                 <h1 className="font-serif text-2xl font-semibold tracking-wide text-foreground">
-                  MAISON <span className="text-gold">OUD</span>
+                  <span className="text-gold">Bela</span> de Perfume
                 </h1>
               </Link>
 

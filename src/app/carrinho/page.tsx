@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ShoppingBag, ArrowLeft } from "lucide-react";
+import { siteConfig } from "@/lib/config";
 
 export default function CarrinhoPage() {
   return (

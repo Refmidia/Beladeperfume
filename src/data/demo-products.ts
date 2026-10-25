@@ -3,7 +3,7 @@
  * 
  * Estes produtos são FICTÍCIOS e criados apenas para demonstração.
  * NÃO representam produtos reais ou disponíveis para venda.
- * Imagens são placeholders de https://placehold.co
+ * Imagens são de Unsplash (licença livre para uso comercial)
  */
 
 import type { Product, Brand, Category } from "@/types";
@@ -25,30 +25,38 @@ export const DEMO_CATEGORIES: Category[] = [
     name: "Perfumes Femininos",
     slug: "feminino",
     description: "Fragrâncias sofisticadas para ela",
-    imageUrl: "https://placehold.co/600x800/F8F5EF/B49357?text=Feminino",
+    imageUrl: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=600&q=80",
   },
   {
     id: "2",
     name: "Perfumes Masculinos",
     slug: "masculino",
     description: "Fragrâncias marcantes para ele",
-    imageUrl: "https://placehold.co/600x800/F8F5EF/B49357?text=Masculino",
+    imageUrl: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=600&q=80",
   },
   {
     id: "3",
     name: "Perfumes Unissex",
     slug: "unissex",
     description: "Fragrâncias sem fronteiras",
-    imageUrl: "https://placehold.co/600x800/F8F5EF/B49357?text=Unissex",
+    imageUrl: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=600&q=80",
   },
 ];
 
-const generatePlaceholderImage = (name: string, index: number = 0) => {
-  const colors = ["EEE9DF", "E5DED2", "F8F5EF", "FCFAF6"];
-  const color = colors[index % colors.length];
-  const encodedName = encodeURIComponent(name.slice(0, 15));
-  return `https://placehold.co/600x600/${color}/302A23?text=${encodedName}`;
-};
+const PERFUME_IMAGES = [
+  "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=600&q=80",
+  "https://images.unsplash.com/photo-1541643600914-78b084683601?w=600&q=80",
+  "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=600&q=80",
+  "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=600&q=80",
+  "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=600&q=80",
+  "https://images.unsplash.com/photo-1587017539504-67cfbddac569?w=600&q=80",
+  "https://images.unsplash.com/photo-1595425964071-2c1ecb10b52d?w=600&q=80",
+  "https://images.unsplash.com/photo-1619994403073-2cec844b8e63?w=600&q=80",
+  "https://images.unsplash.com/photo-1590736969955-71cc94901144?w=600&q=80",
+  "https://images.unsplash.com/photo-1608528577891-eb055944f2e7?w=600&q=80",
+  "https://images.unsplash.com/photo-1600612253971-422e7f7faeb6?w=600&q=80",
+  "https://images.unsplash.com/photo-1605001011156-cbf0b0f67a51?w=600&q=80",
+];
 
 export const DEMO_PRODUCTS: Product[] = [
   {
@@ -60,7 +68,7 @@ export const DEMO_PRODUCTS: Product[] = [
     price: 349.00,
     pricePix: 279.20,
     discountPercent: 20,
-    images: [generatePlaceholderImage("Oud Royale", 0)],
+    images: [PERFUME_IMAGES[0]],
     category: "unissex",
     concentration: "edp",
     fragranceFamily: ["oriental", "amadeirado"],
@@ -85,7 +93,7 @@ export const DEMO_PRODUCTS: Product[] = [
     price: 289.00,
     pricePix: 231.20,
     discountPercent: 20,
-    images: [generatePlaceholderImage("Velvet Amber", 1)],
+    images: [PERFUME_IMAGES[1]],
     category: "feminino",
     concentration: "edp",
     fragranceFamily: ["oriental", "gourmand"],
@@ -110,7 +118,7 @@ export const DEMO_PRODUCTS: Product[] = [
     price: 399.00,
     pricePix: 319.20,
     discountPercent: 20,
-    images: [generatePlaceholderImage("Sultan Al Lail", 2)],
+    images: [PERFUME_IMAGES[2]],
     category: "masculino",
     concentration: "edp",
     fragranceFamily: ["oriental", "amadeirado"],
@@ -135,7 +143,7 @@ export const DEMO_PRODUCTS: Product[] = [
     price: 269.00,
     pricePix: 215.20,
     discountPercent: 20,
-    images: [generatePlaceholderImage("Rosa Damascena", 3)],
+    images: [PERFUME_IMAGES[3]],
     category: "feminino",
     concentration: "edp",
     fragranceFamily: ["floral", "oriental"],
@@ -160,7 +168,7 @@ export const DEMO_PRODUCTS: Product[] = [
     price: 459.00,
     pricePix: 367.20,
     discountPercent: 20,
-    images: [generatePlaceholderImage("Intense Oud", 0)],
+    images: [PERFUME_IMAGES[4]],
     category: "unissex",
     concentration: "parfum",
     fragranceFamily: ["amadeirado", "oriental"],
@@ -185,7 +193,7 @@ export const DEMO_PRODUCTS: Product[] = [
     price: 189.00,
     pricePix: 151.20,
     discountPercent: 20,
-    images: [generatePlaceholderImage("Musk Tahara", 1)],
+    images: [PERFUME_IMAGES[5]],
     category: "feminino",
     concentration: "body_splash",
     fragranceFamily: ["floral"],
@@ -210,7 +218,7 @@ export const DEMO_PRODUCTS: Product[] = [
     price: 279.00,
     pricePix: 223.20,
     discountPercent: 20,
-    images: [generatePlaceholderImage("Oud Sharqia", 2)],
+    images: [PERFUME_IMAGES[6]],
     category: "unissex",
     concentration: "edp",
     fragranceFamily: ["oriental", "amadeirado"],
@@ -235,7 +243,7 @@ export const DEMO_PRODUCTS: Product[] = [
     price: 329.00,
     pricePix: 263.20,
     discountPercent: 20,
-    images: [generatePlaceholderImage("Noir Absolu", 3)],
+    images: [PERFUME_IMAGES[7]],
     category: "masculino",
     concentration: "edp",
     fragranceFamily: ["oriental", "gourmand"],
@@ -260,7 +268,7 @@ export const DEMO_PRODUCTS: Product[] = [
     price: 249.00,
     pricePix: 199.20,
     discountPercent: 20,
-    images: [generatePlaceholderImage("Fleur Jasmin", 0)],
+    images: [PERFUME_IMAGES[8]],
     category: "feminino",
     concentration: "edp",
     fragranceFamily: ["floral"],
@@ -285,7 +293,7 @@ export const DEMO_PRODUCTS: Product[] = [
     price: 529.00,
     pricePix: 423.20,
     discountPercent: 20,
-    images: [generatePlaceholderImage("Amber Gold", 1)],
+    images: [PERFUME_IMAGES[9]],
     category: "unissex",
     concentration: "extrait",
     fragranceFamily: ["oriental", "gourmand"],
@@ -310,7 +318,7 @@ export const DEMO_PRODUCTS: Product[] = [
     price: 89.00,
     pricePix: 71.20,
     discountPercent: 20,
-    images: [generatePlaceholderImage("Decant Oud", 2)],
+    images: [PERFUME_IMAGES[10]],
     category: "unissex",
     concentration: "decant",
     fragranceFamily: ["oriental", "amadeirado"],
@@ -330,7 +338,7 @@ export const DEMO_PRODUCTS: Product[] = [
     price: 319.00,
     pricePix: 255.20,
     discountPercent: 20,
-    images: [generatePlaceholderImage("Bakhoor", 3)],
+    images: [PERFUME_IMAGES[11]],
     category: "unissex",
     concentration: "edp",
     fragranceFamily: ["oriental", "amadeirado"],

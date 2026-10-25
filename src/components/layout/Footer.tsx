@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MessageCircle, Mail, MapPin, Phone } from "lucide-react";
+import { siteConfig } from "@/lib/config";
 
 function InstagramIcon({ className }: { className?: string }) {
   return (
@@ -43,9 +44,9 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: InstagramIcon, href: "https://instagram.com", label: "Instagram" },
-  { icon: FacebookIcon, href: "https://facebook.com", label: "Facebook" },
-  { icon: MessageCircle, href: "https://wa.me/5511999999999", label: "WhatsApp" },
+  { icon: InstagramIcon, href: siteConfig.social.instagram, label: "Instagram" },
+  { icon: FacebookIcon, href: siteConfig.social.facebook, label: "Facebook" },
+  { icon: MessageCircle, href: siteConfig.social.whatsapp, label: "WhatsApp" },
 ];
 
 export function Footer() {
@@ -85,7 +86,7 @@ export function Footer() {
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="inline-block mb-4">
               <h2 className="font-serif text-2xl font-semibold tracking-wide">
-                MAISON <span className="text-gold">OUD</span>
+                <span className="text-gold">Bela</span> de Perfume
               </h2>
             </Link>
             <p className="text-white/70 text-sm mb-4 leading-relaxed">
@@ -169,17 +170,17 @@ export function Footer() {
         {/* Contact Info */}
         <div className="mt-10 pt-8 border-t border-white/10">
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/70">
-            <a href="mailto:contato@maisonoud.com.br" className="flex items-center gap-2 hover:text-white transition-colors">
+            <a href={`mailto:${siteConfig.contact.email}`} className="flex items-center gap-2 hover:text-white transition-colors">
               <Mail className="w-4 h-4" />
-              contato@maisonoud.com.br
+              {siteConfig.contact.email}
             </a>
-            <a href="tel:+5511999999999" className="flex items-center gap-2 hover:text-white transition-colors">
+            <a href={`tel:+${siteConfig.contact.whatsapp}`} className="flex items-center gap-2 hover:text-white transition-colors">
               <Phone className="w-4 h-4" />
-              (11) 99999-9999
+              {siteConfig.contact.phone}
             </a>
             <span className="flex items-center gap-2">
               <MapPin className="w-4 h-4" />
-              São Paulo, SP
+              {siteConfig.contact.location}
             </span>
           </div>
         </div>
@@ -189,7 +190,7 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="container-shop py-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/50">
-            <p>© 2024 MAISON OUD. Todos os direitos reservados.</p>
+            <p>© 2024 {siteConfig.name}. Todos os direitos reservados.</p>
             <div className="flex items-center gap-4">
               <Link href="/privacidade" className="hover:text-white transition-colors">
                 Política de Privacidade
