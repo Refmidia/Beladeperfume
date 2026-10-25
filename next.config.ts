@@ -17,6 +17,10 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  env: {
+    // Lets admin/storefront resolve /catalog/… to R2 without duplicating env vars.
+    NEXT_PUBLIC_CATALOG_CDN: process.env.S3_PUBLIC_URL ?? "",
+  },
   // Checkout and tracking arguments contain customer contact details.
   logging: { serverFunctions: false },
   poweredByHeader: false,

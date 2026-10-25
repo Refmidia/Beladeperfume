@@ -10,7 +10,13 @@ import {
 } from "@/db/schema";
 import { applyCostToVariantPricing } from "@/lib/pricing/apply";
 import { canPublishProduct, publishBlockReasons } from "@/lib/import/publish-guards";
+import { env } from "@/lib/env";
+import { absolutizeCatalogImageUrl } from "@/lib/storage/image-url";
 import { productSchema } from "./schema";
+
+function persistImageUrl(url: string) {
+  return absolutizeCatalogImageUrl(url, env.S3_PUBLIC_URL);
+}
 /** Authenticated callers only. Atomic edits preserve ordered variant IDs and detect stock drift. */
 export async function saveProductRecord(
   id: string | undefined,
@@ -148,6 +154,7 @@ export async function saveProductRecord(
         .values(
           images.map((v, sortOrder) => ({
             ...v,
+            url: persistImageUrl(v.url),
             sortOrder,
             productId: product.id,
           })),

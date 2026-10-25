@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { resolveCatalogImageUrl } from "@/lib/storage/image-url";
+
 export function Media({
   src,
   alt,
@@ -12,11 +14,12 @@ export function Media({
   priority?: boolean;
   sizes?: string;
 }) {
+  const resolved = resolveCatalogImageUrl(src) ?? src;
   return (
     <div className={`media ${className}`}>
-      {src ? (
+      {resolved ? (
         <Image
-          src={src}
+          src={resolved}
           alt={alt}
           fill
           sizes={sizes}
@@ -26,11 +29,11 @@ export function Media({
           fetchPriority={priority ? "high" : undefined}
           // Demo sandbox uploads (sbx-…) exist only for the visitor's own requests.
           unoptimized={
-            src.endsWith(".svg") ||
-            src.startsWith("http") ||
-            src.startsWith("/uploads/") ||
-            src.startsWith("/hero/") ||
-            src.startsWith("/catalog/")
+            resolved.endsWith(".svg") ||
+            resolved.startsWith("http") ||
+            resolved.startsWith("/uploads/") ||
+            resolved.startsWith("/hero/") ||
+            resolved.startsWith("/catalog/")
           }
         />
       ) : (

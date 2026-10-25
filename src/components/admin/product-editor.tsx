@@ -38,6 +38,7 @@ import {
 } from "./catalog-link-dialog";
 import { VariantVolumeField } from "./variant-volume-field";
 import { Combobox } from "./combobox";
+import { resolveCatalogImageUrl } from "@/lib/storage/image-url";
 
 /** Caminhos relativos (../foto.webp) não funcionam; imagens publicadas ficam em /catalog/. */
 function normalizeProductImageUrl(raw: string) {
@@ -296,6 +297,15 @@ export function ProductEditor({
 
   function confirmCatalogLink(url: string, alt: string) {
     const normalized = normalizeProductImageUrl(url);
+    if (
+      normalized.startsWith("/catalog/") &&
+      !normalized.startsWith("http")
+    ) {
+      toast.error(
+        "Este link ainda não tem foto no servidor. Use «Enviar foto» no pop-up ou aguarde «Foto adicionada» antes de salvar.",
+      );
+      return;
+    }
     setData((d) => ({
       ...d,
       images: [...d.images, { url: normalized, alt: alt || d.name || pe.productEditor.productImageAlt }],
@@ -678,7 +688,13 @@ export function ProductEditor({
                   >
                     <div className="admin-gallery-media">
                       {image.url ? (
-                        <Image unoptimized fill sizes="240px" src={image.url} alt={image.alt} />
+                        <Image
+                          unoptimized
+                          fill
+                          sizes="240px"
+                          src={resolveCatalogImageUrl(image.url) ?? image.url}
+                          alt={image.alt}
+                        />
                       ) : (
                         <span className="admin-muted">{pe.productEditor.noImage}</span>
                       )}
@@ -819,7 +835,13 @@ export function ProductEditor({
             <div className="admin-media-preview">
               <button type="button" className="admin-media-main" onClick={() => setTab("images")} aria-label={pe.productEditor.manageImages}>
                 {data.images[0]?.url ? (
-                  <Image unoptimized fill sizes="320px" src={data.images[0].url} alt={data.images[0].alt} />
+                  <Image
+                    unoptimized
+                    fill
+                    sizes="320px"
+                    src={resolveCatalogImageUrl(data.images[0].url) ?? data.images[0].url}
+                    alt={data.images[0].alt}
+                  />
                 ) : (
                   <span>
                     <ImagePlus size={22} />
@@ -830,7 +852,15 @@ export function ProductEditor({
               <div className="admin-media-thumbs">
                 {data.images.slice(1, 3).map((img, i) => (
                   <button type="button" key={i} onClick={() => setTab("images")} aria-label={pe.productEditor.imageN(i + 2)}>
-                    {img.url && <Image unoptimized fill sizes="96px" src={img.url} alt="" />}
+                    {img.url && (
+                      <Image
+                        unoptimized
+                        fill
+                        sizes="96px"
+                        src={resolveCatalogImageUrl(img.url) ?? img.url}
+                        alt=""
+                      />
+                    )}
                   </button>
                 ))}
                 <button type="button" className="admin-media-add" onClick={() => { setTab("images"); uploader.current?.click(); }} aria-label={pe.productEditor.addImages}>

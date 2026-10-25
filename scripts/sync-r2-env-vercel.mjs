@@ -19,6 +19,9 @@ const KEYS = [
   "S3_PUBLIC_URL",
 ];
 
+/** Produção Bela — uploads falham se ficar localhost. */
+const APP_URL_DEFAULT = "https://beladeperfume.vercel.app";
+
 function parseEnv(text) {
   const out = {};
   for (const line of text.split("\n")) {
@@ -79,5 +82,12 @@ for (const k of KEYS) {
   if (!vercelEnvAdd(k, vars[k], "production")) ok = false;
   if (!vercelEnvAdd(k, vars[k], "preview")) ok = false;
 }
+const appUrl =
+  vars.NEXT_PUBLIC_APP_URL && !vars.NEXT_PUBLIC_APP_URL.includes("localhost")
+    ? vars.NEXT_PUBLIC_APP_URL
+    : APP_URL_DEFAULT;
+console.log("\nNEXT_PUBLIC_APP_URL →", appUrl);
+if (!vercelEnvAdd("NEXT_PUBLIC_APP_URL", appUrl, "production")) ok = false;
+if (!vercelEnvAdd("NEXT_PUBLIC_APP_URL", appUrl, "preview")) ok = false;
 if (!ok) process.exit(1);
 console.log("\nPróximo: Vercel → Deployments → Redeploy");

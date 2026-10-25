@@ -48,6 +48,33 @@ export function CatalogLinkDialog({
     setUrl(pending.url);
     setAlt(pending.alt);
     dialog.current?.showModal();
+
+    let cancelled = false;
+    void (async () => {
+      setUploading(true);
+      try {
+        const slug = pending.url
+          .replace(/^\/catalog\//, "")
+          .replace(/\.webp$/i, "");
+        const uploaded = await uploadCatalogImage(
+          pending.file,
+          slug || "imagem",
+        );
+        if (cancelled) return;
+        setUrl(uploaded);
+        toast.success(t.productEditor.catalogUploadOk);
+        onConfirm(uploaded, pending.alt);
+        dialog.current?.close();
+      } catch (e) {
+        if (!cancelled) toast.error((e as Error).message);
+      } finally {
+        if (!cancelled) setUploading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [pending]);
 
   function close() {
@@ -133,10 +160,24 @@ export function CatalogLinkDialog({
         <button
           type="button"
           className="admin-btn primary"
+          disabled={
+            uploading ||
+            (!/^https?:\/\//i.test(url.trim()) &&
+              url.trim().startsWith("/catalog/"))
+          }
           onClick={() => {
             const trimmed = url.trim();
             if (!trimmed.startsWith("/") && !/^https?:\/\//i.test(trimmed)) {
               toast.error("Use um caminho /catalog/… ou https://…");
+              return;
+            }
+            if (
+              trimmed.startsWith("/catalog/") &&
+              !/^https?:\/\//i.test(trimmed)
+            ) {
+              toast.error(
+                "Envie a foto primeiro (URL deve começar com https://).",
+              );
               return;
             }
             onConfirm(trimmed, alt.trim() || pending.alt);

@@ -6,6 +6,7 @@ import { MAX_UPLOAD_BYTES, validateImage } from "@/lib/storage/image";
 import { takeRateLimit } from "@/lib/rate-limit";
 import { env } from "@/lib/env";
 import { putSandboxUpload, SandboxUploadError } from "@/lib/demo/uploads";
+import { isAllowedUploadOrigin } from "@/lib/upload-origin";
 export const runtime = "nodejs";
 export async function POST(request: Request) {
   const session = await adminSession(request.headers);
@@ -14,8 +15,14 @@ export async function POST(request: Request) {
       { error: "Sign in as an administrator." },
       { status: 401 },
     );
-  if (request.headers.get("origin") !== new URL(env.NEXT_PUBLIC_APP_URL).origin)
-    return Response.json({ error: "Invalid origin." }, { status: 403 });
+  if (!isAllowedUploadOrigin(request))
+    return Response.json(
+      {
+        error:
+          "Origem inválida para envio de foto. Confira NEXT_PUBLIC_APP_URL na Vercel (https://beladeperfume.vercel.app).",
+      },
+      { status: 403 },
+    );
   if (!(await takeRateLimit("upload", session.user.id, 60)))
     return Response.json(
       { error: "Too many uploads. Try again later." },
