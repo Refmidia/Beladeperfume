@@ -1,0 +1,255 @@
+@import "tailwindcss";
+
+:root {
+  /* Background */
+  --background: #F8F5EF;
+  --background-secondary: #EEE9DF;
+  --card: #FFFFFF;
+  --card-warm: #FCFAF6;
+  
+  /* Gold */
+  --gold: #B49357;
+  --gold-dark: #86672F;
+  --gold-light: #C9A96E;
+  
+  /* Text */
+  --foreground: #302A23;
+  --foreground-muted: #777067;
+  --foreground-subtle: #9A9389;
+  
+  /* Borders */
+  --border: #E5DED2;
+  --border-light: #F0EBE3;
+  
+  /* Dark elements */
+  --dark: #1A1714;
+  --dark-soft: #2D2720;
+  
+  /* Status */
+  --success: #4A7C59;
+  --error: #A94442;
+  --warning: #B8860B;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(48, 42, 35, 0.05);
+  --shadow-md: 0 4px 12px rgba(48, 42, 35, 0.08);
+  --shadow-lg: 0 8px 24px rgba(48, 42, 35, 0.12);
+  --shadow-xl: 0 16px 48px rgba(48, 42, 35, 0.16);
+  
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 17px;
+  --radius-full: 9999px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-card: var(--card);
+  --color-card-warm: var(--card-warm);
+  --color-gold: var(--gold);
+  --color-gold-dark: var(--gold-dark);
+  --color-gold-light: var(--gold-light);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-subtle: var(--foreground-subtle);
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  --color-dark: var(--dark);
+  --color-dark-soft: var(--dark-soft);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --color-warning: var(--warning);
+  
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-manrope);
+  
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-manrope), system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography utilities */
+.font-serif {
+  font-family: var(--font-cormorant), Georgia, serif;
+}
+
+.font-sans {
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}
+
+/* Gold gradient text */
+.text-gold-gradient {
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Button base styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.btn-gold {
+  background: var(--gold);
+  color: white;
+}
+
+.btn-gold:hover {
+  background: var(--gold-dark);
+}
+
+.btn-dark {
+  background: var(--dark);
+  color: white;
+}
+
+.btn-dark:hover {
+  background: var(--dark-soft);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+}
+
+.btn-outline:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--border-light) 25%,
+    var(--background-secondary) 50%,
+    var(--border-light) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Container */
+.container-shop {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 768px) {
+  .container-shop {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-shop {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Focus ring for accessibility */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Prevent horizontal overflow */
+html, body {
+  overflow-x: hidden;
+}
